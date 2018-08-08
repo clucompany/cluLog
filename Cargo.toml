@@ -1,0 +1,12 @@
+[package]
+name = "clulog"
+version = "0.1.2"
+authors = ["Денис Котляров <denis2005991@gmail.com>"]
+
+[lib]
+name = "clulog"
+path = "src/lib.rs"
+crate-type = ["dylib", "rlib"]
+
+[dependencies]
+cluColor = "*"
