@@ -1,4 +1,3 @@
-#![feature(const_fn)]
 
 #[macro_use]
 extern crate clucolor;
@@ -9,10 +8,7 @@ pub mod write;
 mod macros;
 
 use log::empty::LogEmpty;
-use log::default::LogStd;
 use log::cluLog;
-use write::LogWrite;
-use panic::LogPanic;
 use std::sync::{Once, ONCE_INIT};
 
 
@@ -71,6 +67,9 @@ macro_rules! init_clulog {
 		{
 			clulog::set_boxed_logger(clulog::log::default::LogStd::default_box());
 		}
+	};
+	(default) => {
+		init_clulog!();
 	};
 	
 	(null) => {
