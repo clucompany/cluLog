@@ -1,13 +1,12 @@
 
 #[macro_use]
-extern crate clulog;
+extern crate cluLog;
 
 
 fn main() {
-	init_clulog!();	
+	init_cluLog!();	
 	
 	warn!("Warning");
-	err!("This Machine Yrod :(");
 	inf!("AAAAAA");
 	
 	unk!("START", "Unk {} {}", 23243, 21);

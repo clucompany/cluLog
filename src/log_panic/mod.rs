@@ -3,10 +3,10 @@ pub mod def;
 
 use std::fmt::Arguments;
 use std::io::Write;
-use ::write::LogWrite;
+use log_write::LogWrite;
 use std::io;
 
-pub type DefTypeProgramPanic = self::def::StdPanic;
+pub type DefTypeProgramPanic = self::def::DefaultPanic;
 
 
 pub trait LogPanic {

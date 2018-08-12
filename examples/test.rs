@@ -1,6 +1,6 @@
 
 #[macro_use]
-extern crate clulog;
+extern crate cluLog;
 
 
 fn main() {
@@ -8,12 +8,12 @@ fn main() {
 	for a in 0..400 {
 		::std::thread::spawn(move || {
 			loop {
-				//init_clulog!();
-				//init_clulog!(null);
-				init_clulog!();
-				init_clulog!(null);
-				init_clulog!(none);
-				init_clulog!();
+				//init_cluLog!();
+				//init_cluLog!(null);
+				init_cluLog!();
+				init_cluLog!(null);
+				init_cluLog!(none);
+				init_cluLog!();
 				
 				
 				unk!("aa", "AAA {} {}", 23243, num);
@@ -27,7 +27,7 @@ fn main() {
 			num = 1;
 		}
 	}*/
-	init_clulog!(none);
+	init_cluLog!(none);
 	
 	unk!("aa", "AAA {} {}", 23243, 21);
 	println!("12");

@@ -1,7 +1,7 @@
 
 use std::io::Write;
 use std::fmt::Arguments;
-use ::write::LogWrite;
+use log_write::LogWrite;
 use ::std::io;
 
 use clucolor::colors::*;
@@ -13,6 +13,7 @@ pub type ErrColor = 	BrightRed;
 
 pub type WarningColor = 	BrightYellow;
 pub type InfoColor = 	BrightCyan;
+//pub type TraceColor = 	BrightYellow;
 pub type UnkColor = 	BrightBlue;
 
 pub type PrintColor = 	BrightWhite;
@@ -49,12 +50,24 @@ impl LogWrite for cluLogColorWrite {
 	//[PANIC] - panic program
 	
 	#[inline(always)]
-	fn unknown<'a, W: Write>(write: W, name: &'a str, display: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'a, W: Write>(write: W, name: &'static str, display: Arguments<'a>) -> io::Result<()> {
 		writen_color!(write, UnkColor, "[{}] {}", name, color_args!(bright_white, display))
 	}
 	//[UNK] - unknown 
 	
-	
+	#[inline(always)]
+	fn trace<'s, W: Write>(mut write: W, line: u32, pos: u32, file: &'static str, display: Arguments<'s>) -> io::Result<()> {
+		write.write_fmt(format_args!( 
+			"{}{} {}\n", 
+			
+			color_args!(bright_yellow, "[TRACE]"), 
+			color_args!(bright_blue, bold, format_args!("[{}][{}:{}]", file, line, pos)), 
+			color_args!(bright_white, display) 
+
+		))
+		
+		//writen_color!(write, TraceColor, "{}[{}][{}:{}] {}", color_args!(bright_white, "[TRACE]"), file, line, pos, display)
+	}	
 	
 	#[inline(always)]
 	fn print<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {

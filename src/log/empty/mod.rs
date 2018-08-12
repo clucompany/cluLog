@@ -31,6 +31,10 @@ impl<'l> cluLog<'l> for LogEmpty {
 	fn warning<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
 		Ok( () )
 	}
+
+	fn trace<'a>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'a>) -> io::Result<()> {
+		Ok( () )
+	}
 	
 	#[inline(always)]
 	fn info<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
@@ -48,7 +52,7 @@ impl<'l> cluLog<'l> for LogEmpty {
 	}
 	
 	#[inline(always)]	
-	fn unknown<'a>(&self, _name: &'a str, _args: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'a>(&self, _name: &'static str, _args: Arguments<'a>) -> io::Result<()> {
 		Ok( () )
 	}
 	

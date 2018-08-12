@@ -1,9 +1,9 @@
 
 #[macro_use]
-extern crate clulog;
+extern crate cluLog;
 
 fn main() {
-	init_clulog!();
+	init_cluLog!();
 	
      inf!("Test");
 	

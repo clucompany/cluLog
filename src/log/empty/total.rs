@@ -46,7 +46,11 @@ impl<'l> cluLog<'l> for LogTotalEmpty {
 	}
 	
 	#[inline(always)]	
-	fn unknown<'a>(&self, _name: &'a str, _args: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'a>(&self, _name: &'static str, _args: Arguments<'a>) -> io::Result<()> {
+		Ok( () )
+	}
+
+	fn trace<'a>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'a>) -> io::Result<()> {
 		Ok( () )
 	}
 	

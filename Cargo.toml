@@ -1,12 +1,12 @@
 [package]
-name = "clulog"
-version = "0.1.2"
+name = "cluLog"
+version = "0.1.4"
 authors = ["Денис Котляров <denis2005991@gmail.com>"]
 
 [lib]
-name = "clulog"
+name = "cluLog"
 path = "src/lib.rs"
 crate-type = ["dylib", "rlib"]
 
 [dependencies]
-cluColor = "*"
+cluColor = "0.1.4"

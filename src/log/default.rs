@@ -12,12 +12,12 @@ use log::cluLogIOLock;
 use log::lock::cluLogLock;
 use log::lock::cluLogLockNoFlush;
 use std::marker::PhantomData;
-use ::write::LogWrite;
-use ::panic::LogPanic;
+use log_write::LogWrite;
+use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use log::cluLog;
-use ::std::io;
+use std::io;
 
 #[derive(Debug)]
 pub struct LogStd<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cluLogRawIOLock<'a, ELOCK>, OLOCK: 'a +  Write, ELOCK: 'a +  Write> {
@@ -81,8 +81,12 @@ impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cl
 		PANIC::panic::<WRITER, OLOCK>(self.out.lock(), args)
 	}
 	
-	fn unknown<'l>(&'a self, name: &'l str, args: Arguments<'l>) -> io::Result<()> {
+	fn unknown<'l>(&'a self, name: &'static str, args: Arguments<'l>) -> io::Result<()> {
 		WRITER::unknown(self.out.lock(), name, args)
+	}
+
+	fn trace<'l>(&'a self, line: u32, pos: u32, file: &'static str, args: Arguments<'l>) -> io::Result<()> {
+		WRITER::trace(self.out.lock(), line, pos, file, args)
 	}
 	
 	fn print<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {

@@ -25,9 +25,12 @@ pub trait cluLog<'a>: cluLogIOLock<'a> + cluLogFlushIO {
 	
 	fn panic<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
-	fn unknown<'s>(&'a self, name: &'s str, args: Arguments<'s>) -> io::Result<()>;
+	fn unknown<'s>(&'a self, name: &'static str, args: Arguments<'s>) -> io::Result<()>;
+
+	fn trace<'s>(&'a self, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()>;
 	
 	fn print<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
+
 	fn eprint<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 }
 

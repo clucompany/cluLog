@@ -1,21 +1,16 @@
 
-use ::panic::LogPanic;
+use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
-use ::write::LogWrite;
+use log_write::LogWrite;
 
 #[derive(Debug)]
-pub enum StdPanic { }
+pub enum DefaultPanic { }
 
-impl LogPanic for StdPanic {
-	#[inline(always)]
+impl LogPanic for DefaultPanic {
+	#[inline]
 	fn panic<'a, WRITER: LogWrite, W: Write>(_write: W, arg: Arguments<'a>) -> io::Result<()> {
-		
-		/*if let Err(e) = WRITER::panic(write, arg) {
-			return Err(e);
-		}*/
-		
 		panic!("{}", arg);
 	}
 }

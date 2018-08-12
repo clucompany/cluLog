@@ -3,8 +3,8 @@
 extern crate clucolor;
 
 pub mod log;
-pub mod panic;
-pub mod write;
+pub mod log_panic;
+pub mod log_write;
 mod macros;
 
 use log::empty::LogEmpty;
@@ -12,8 +12,8 @@ use log::cluLog;
 use std::sync::{Once, ONCE_INIT};
 
 
-pub type DefLogWrite = 			self::write::			DefLogWrite;
-pub type DefLogPanic = 			self::panic::			DefTypeProgramPanic;
+pub type DefLogWrite = 			self::log_write::			DefLogWrite;
+pub type DefLogPanic = 			self::log_panic::			DefTypeProgramPanic;
 /*pub type Log = cluLog<
 	OutWrite = ::std::io::StdoutLock<'static>, 
 	ErrWrite = ::std::io::StderrLock<'static>
@@ -62,50 +62,50 @@ pub fn as_log<'a>() -> &'a cluLog<'static> {
 
 
 #[macro_export]
-macro_rules! init_clulog {
+macro_rules! init_cluLog {
 	() => {
 		{
-			clulog::set_boxed_logger(clulog::log::default::LogStd::default_box());
+			cluLog::set_boxed_logger(cluLog::log::default::LogStd::default_box());
 		}
 	};
 	(default) => {
-		init_clulog!();
+		init_cluLog!();
 	};
 	
 	(null) => {
 		{
-			use clulog::log::empty::total::LogTotalEmpty;
+			use cluLog::log::empty::total::LogTotalEmpty;
 
-			clulog::set_logger(&LogTotalEmpty)
+			cluLog::set_logger(&LogTotalEmpty)
 		}
 	};
 	
 	(none) => {
 		{
-			use clulog::log::empty::LogEmpty;
-			clulog::set_logger(&LogEmpty)
-			//clulog::set_boxed_logger(Box::new(LogEmpty))
+			use cluLog::log::empty::LogEmpty;
+			cluLog::set_logger(&LogEmpty)
+			//cluLog::set_boxed_logger(Box::new(LogEmpty))
 		}
 	};
 	
 	(panic, $panic:tt) => {
 		{
-			use clulog::DefLogWrite;
-			clulog::set_logger(&clulog::init_std::<DefLogWrite, $panic>())
+			use cluLog::DefLogWrite;
+			cluLog::set_logger(&cluLog::init_std::<DefLogWrite, $panic>())
 		}
 	};
 	
 	(write, $write:tt) => {
 		{
-			use clulog::DefLogPanic;
-			clulog::set_logger(&clulog::init_std::<$write, DefLogPanic>())
+			use cluLog::DefLogPanic;
+			cluLog::set_logger(&cluLog::init_std::<$write, DefLogPanic>())
 		}
 	};
 	
 	($write:tt, $panic:tt) => {
 		//{
-			//let std = clulog::init_std::<$write, $panic>();
-			//clulog::set_logger(&LogStd::<$write, $panic>::new());
+			//let std = cluLog::init_std::<$write, $panic>();
+			//cluLog::set_logger(&LogStd::<$write, $panic>::new());
 			clucolor::set_boxed_logger(LogStd::default_box());
 		//}
 	};
@@ -116,7 +116,7 @@ macro_rules! init_clulog {
 #[macro_export]
 macro_rules! as_log {
 	() => {
-		clulog::as_log()
+		cluLog::as_log()
 	};
 }
 

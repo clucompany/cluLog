@@ -1,7 +1,7 @@
 
 use std::fmt::Arguments;
 use std::io::Write;
-use ::write::LogWrite;
+use log_write::LogWrite;
 use std::io;
 
 #[allow(non_camel_case_types)]
@@ -35,12 +35,15 @@ impl LogWrite for cluLogWrite {
 	//[PANIC] - panic program
 	
 	#[inline(always)]
-	fn unknown<'a, W: Write>(mut write: W, name: &'a str, display: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'a, W: Write>(mut write: W, name: &'static str, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[{}] {}\n", name, display)	)
 	}
 	//[UNK] - unknown 
 	
-	
+	#[inline(always)]
+	fn trace<'s, W: Write>(mut write: W, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()> {
+		write.write_fmt(	format_args!("[TRACE][{}][{}:{}] {}\n", file, line, pos, args)	)
+	}
 	
 	#[inline(always)]
 	fn print<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {

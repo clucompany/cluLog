@@ -25,10 +25,12 @@ pub trait LogWrite {
 	fn panic<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[PANIC] - panic program
 	
-	fn unknown<'s, W: Write>(write: W, name: &'s str, display: Arguments<'s>) -> io::Result<()>;
+	fn unknown<'s, W: Write>(write: W, name: &'static str, display: Arguments<'s>) -> io::Result<()>;
 	//[UNK] - unknown 
 	
-	
+	fn trace<'s, W: Write>(write: W, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()>;
+	//[TRACE][src/main.rs][38:29] Test alc
+
 	fn print<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[ERR] - print value
 	
