@@ -29,7 +29,7 @@ pub trait LogWrite {
 	//[UNK] - unknown 
 	
 	fn trace<'s, W: Write>(write: W, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()>;
-	//[TRACE][src/main.rs][38:29] Test alc
+	//[TRACE][src/main.rs][38:29] - trace
 
 	fn print<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[ERR] - print value

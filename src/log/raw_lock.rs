@@ -8,22 +8,19 @@ use std::io::Stdout;
 
 //Raw internal locking method
 #[allow(non_camel_case_types)]
-pub trait cluLogRawIOLock<'a, W: Write + 'a>: Write + Send + Sync {
+pub trait LogLockRawIO<'a, W: Write + 'a>: Write + Send + Sync {
+     ///Internal method
 	fn lock(&'a self) -> W;
 }
 
-impl<'a> cluLogRawIOLock<'a, StdoutLock<'a>> for Stdout {
-
-     ///Internal method
+impl<'a> LogLockRawIO<'a, StdoutLock<'a>> for Stdout {
      #[inline(always)]
      fn lock(&'a self) -> StdoutLock<'a> {
           self.lock()
      }
 }
 
-impl<'a> cluLogRawIOLock<'a, StderrLock<'a>> for Stderr {
-
-     ///Internal method
+impl<'a> LogLockRawIO<'a, StderrLock<'a>> for Stderr {
      #[inline(always)]
      fn lock(&'a self) -> StderrLock<'a> {
           self.lock()

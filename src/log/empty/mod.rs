@@ -1,7 +1,7 @@
 
 use log::union::LogUnion;
-use log::cluLogFlushIO;
-use log::cluLogIOLock;
+use log::LogFlushIO;
+use log::LogLockIO;
 use std::ops::DerefMut;
 use log::cluLog;
 use std::fmt::Arguments;
@@ -32,6 +32,7 @@ impl<'l> cluLog<'l> for LogEmpty {
 		Ok( () )
 	}
 
+	#[inline(always)]
 	fn trace<'a>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'a>) -> io::Result<()> {
 		Ok( () )
 	}
@@ -65,7 +66,7 @@ impl<'l> cluLog<'l> for LogEmpty {
 	}
 }
 
-impl cluLogFlushIO for LogEmpty {
+impl LogFlushIO for LogEmpty {
 	#[inline(always)]	
 	fn flush_out(&mut self) -> io::Result<()> {
 		Ok( () )
@@ -78,7 +79,7 @@ impl cluLogFlushIO for LogEmpty {
 }
 
 
-impl<'a> cluLogIOLock<'a> for LogEmpty {
+impl<'a> LogLockIO<'a> for LogEmpty {
 	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
 		cluLogLock::empty_boxed()
 	}

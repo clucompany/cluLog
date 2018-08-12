@@ -16,7 +16,7 @@ use std::io;
 
 
 #[allow(non_camel_case_types)]
-pub trait cluLog<'a>: cluLogIOLock<'a> + cluLogFlushIO {
+pub trait cluLog<'a>: LogLockIO<'a> + LogFlushIO {
 	fn warning<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
 	fn info<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
@@ -36,7 +36,7 @@ pub trait cluLog<'a>: cluLogIOLock<'a> + cluLogFlushIO {
 
 ///Secure outflow blocking
 #[allow(non_camel_case_types)]
-pub trait cluLogIOLock<'a> {
+pub trait LogLockIO<'a> {
 	///Blocking threads with automatic cleaning
 	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
 
@@ -54,7 +54,7 @@ pub trait cluLogIOLock<'a> {
 
 ///Flush of output streams
 #[allow(non_camel_case_types)]
-pub trait cluLogFlushIO {
+pub trait LogFlushIO {
 	///Flush the output stream
 	fn flush_out(&mut self) -> io::Result<()>;
 
@@ -62,6 +62,7 @@ pub trait cluLogFlushIO {
 	fn flush_err(&mut self) -> io::Result<()>;
 	
 	///Flush Out stream and Err stream
+	#[inline]
 	fn flush(&mut self) -> io::Result<()> {
 		if let Err(e) = self.flush_out() {
 			return Err(e);

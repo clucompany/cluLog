@@ -64,6 +64,9 @@ macro_rules! log {
 	(ERRn: $($arg:tt)*) => (
 		eprintln!($($arg)*);
 	);
+	(TRACE: $($arg:tt)*) => (
+		trace!($($arg)*);
+	);
 }
 
 

@@ -1,5 +1,5 @@
 
-use log::cluLogFlushIO;
+use log::LogFlushIO;
 use log::empty::total::LogTotalEmpty;
 use log::empty::LogEmpty;
 use std::marker::PhantomData;
@@ -36,7 +36,7 @@ impl<'a> LogUnion<'a, LogTotalEmpty, LogTotalEmpty> {
 }
 
 
-impl<'a, A: cluLog<'a>, B: cluLog<'a>> cluLogFlushIO for LogUnion<'a, A, B> {
+impl<'a, A: cluLog<'a>, B: cluLog<'a>> LogFlushIO for LogUnion<'a, A, B> {
      #[inline(always)]
      fn flush_out(&mut self) -> io::Result<()> {
           if let Err(e) = self.0.flush_out() {

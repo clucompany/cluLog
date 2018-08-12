@@ -2,13 +2,13 @@
 use std::ops::DerefMut;
 use std::io::StderrLock;
 use std::io::StdoutLock;
-use log::raw_lock::cluLogRawIOLock;
+use log::raw_lock::LogLockRawIO;
 use std::io::Stdout;
 use std::io::Stderr;
 use DefLogPanic;
 use DefLogWrite;
-use log::cluLogFlushIO;
-use log::cluLogIOLock;
+use log::LogFlushIO;
+use log::LogLockIO;
 use log::lock::cluLogLock;
 use log::lock::cluLogLockNoFlush;
 use std::marker::PhantomData;
@@ -20,7 +20,7 @@ use log::cluLog;
 use std::io;
 
 #[derive(Debug)]
-pub struct LogStd<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cluLogRawIOLock<'a, ELOCK>, OLOCK: 'a +  Write, ELOCK: 'a +  Write> {
+pub struct LogStd<'a, WRITER: LogWrite, PANIC: LogPanic, O: LogLockRawIO<'a, OLOCK>, E: LogLockRawIO<'a, ELOCK>, OLOCK: 'a +  Write, ELOCK: 'a +  Write> {
 	_b:	PhantomData<WRITER>,
 	_p:	PhantomData<PANIC>,	
 	_ln: PhantomData<&'a ()>,
@@ -47,7 +47,7 @@ impl<'a> LogStd<'a, DefLogWrite, DefLogPanic, Stdout, Stderr, StdoutLock<'a>, St
 
 
 
-impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cluLogRawIOLock<'a, ELOCK>, OLOCK: 'a +  Write, ELOCK: 'a +  Write> LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
+impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: LogLockRawIO<'a, OLOCK>, E: LogLockRawIO<'a, ELOCK>, OLOCK: 'a +  Write, ELOCK: 'a +  Write> LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
 	#[inline]
 	pub fn new(out: O, err: E) -> Self {		
 		Self {
@@ -61,10 +61,15 @@ impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cl
 			err: err,
 		}
 	}
+
+	#[inline]
+	pub fn boxed(out: O, err: E) -> Box<Self> {
+		Box::new(Self::new(out, err))
+	}
 }
 
 
-impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cluLogRawIOLock<'a, ELOCK>, OLOCK: 'a + Write, ELOCK: 'a +  Write> cluLog<'a> for LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
+impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: LogLockRawIO<'a, OLOCK>, E: LogLockRawIO<'a, ELOCK>, OLOCK: 'a + Write, ELOCK: 'a +  Write> cluLog<'a> for LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
 	fn warning<'l>(&'a self, args: Arguments) -> io::Result<()> {
 		WRITER::warning(self.out.lock(), args)
 	}
@@ -98,7 +103,7 @@ impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cl
 	}
 }
 
-impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cluLogRawIOLock<'a, ELOCK>, OLOCK: 'a + Write , ELOCK: 'a +  Write> cluLogFlushIO for LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
+impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: LogLockRawIO<'a, OLOCK>, E: LogLockRawIO<'a, ELOCK>, OLOCK: 'a + Write , ELOCK: 'a +  Write> LogFlushIO for LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
 	fn flush_out(&mut self) -> io::Result<()> {
 		self.out.flush()
 	}
@@ -108,7 +113,7 @@ impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cl
 	}
 }
 	
-impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: cluLogRawIOLock<'a, OLOCK>, E: cluLogRawIOLock<'a, ELOCK>, OLOCK: 'a + Write , ELOCK: 'a +  Write> cluLogIOLock<'a> for LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
+impl<'a, WRITER: LogWrite, PANIC: LogPanic, O: LogLockRawIO<'a, OLOCK>, E: LogLockRawIO<'a, ELOCK>, OLOCK: 'a + Write , ELOCK: 'a +  Write> LogLockIO<'a> for LogStd<'a, WRITER, PANIC, O, E, OLOCK, ELOCK> {
 	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
 		cluLogLock::boxed(self.out.lock())
 	}
