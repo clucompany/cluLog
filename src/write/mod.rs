@@ -2,38 +2,37 @@
 pub mod def;
 pub mod color;
 
-use std::fmt::Debug;
 use std::fmt::Arguments;
-//use std::fmt::Write;
 use std::io::Write;
 use std::io;
 
 
-//pub type DefTypeLogWrite = self::def::cluLogWrite;
-pub type DefTypeLogWrite = self::color::cluLogColorWrite;
+pub type DefLogWrite = self::color::cluLogColorWrite;
+pub type DefColorWrite = self::color::cluLogColorWrite;
 
 
-pub trait LogWrite: Debug + Send + Sync {
-	fn warning<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()>;
+///Method of writing the data log
+pub trait LogWrite {
+	fn warning<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[WAR] - warning value
 	
-	fn info<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()>;
+	fn info<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[INF] - info value
 	
-	fn error<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()>;
+	fn error<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[ERR] - err value
 	
-	fn panic<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()>;
+	fn panic<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[PANIC] - panic program
 	
-	fn unknown<'a>(write: &mut Write, name: &'a str, display: Arguments<'a>) -> io::Result<()>;
+	fn unknown<'s, W: Write>(write: W, name: &'s str, display: Arguments<'s>) -> io::Result<()>;
 	//[UNK] - unknown 
 	
 	
-	fn print<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()>;
+	fn print<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[ERR] - print value
 	
-	fn eprint<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()>;
+	fn eprint<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[ERR] - print value
 }
 

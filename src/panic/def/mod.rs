@@ -10,7 +10,7 @@ pub enum StdPanic { }
 
 impl LogPanic for StdPanic {
 	#[inline(always)]
-	fn panic<'a, WRITER: LogWrite>(_write: &mut Write, arg: Arguments<'a>) -> io::Result<()> {
+	fn panic<'a, WRITER: LogWrite, W: Write>(_write: W, arg: Arguments<'a>) -> io::Result<()> {
 		
 		/*if let Err(e) = WRITER::panic(write, arg) {
 			return Err(e);

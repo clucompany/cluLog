@@ -1,4 +1,5 @@
 
+use log::union::LogUnion;
 use log::cluLogFlushIO;
 use log::cluLogIOLock;
 use std::ops::DerefMut;
@@ -14,7 +15,18 @@ pub mod total;
 #[derive(Debug)]
 pub struct LogEmpty;
 
-impl cluLog for LogEmpty {
+impl LogEmpty {
+	pub fn new() -> Self {
+		LogEmpty
+	}
+
+	#[inline]
+	pub fn union<'a>() -> LogUnion<'a, LogEmpty, LogEmpty> {
+		LogUnion::empty()
+	}
+}
+
+impl<'l> cluLog<'l> for LogEmpty {
 	#[inline(always)]
 	fn warning<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
 		Ok( () )
@@ -40,12 +52,10 @@ impl cluLog for LogEmpty {
 		Ok( () )
 	}
 	
-	#[inline(always)]	
 	fn print<'a>(&self, args: Arguments<'a>) -> io::Result<()> {
 		io::stdout().write_fmt(args)
 	}
 	
-	#[inline(always)]	
 	fn eprint<'a>(&self, args: Arguments<'a>) -> io::Result<()> {
 		io::stderr().write_fmt(args)
 	}
@@ -53,35 +63,31 @@ impl cluLog for LogEmpty {
 
 impl cluLogFlushIO for LogEmpty {
 	#[inline(always)]	
-	fn flush_out(&self) -> io::Result<()> {
+	fn flush_out(&mut self) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn flush_err(&self) -> io::Result<()> {
+	fn flush_err(&mut self) -> io::Result<()> {
 		Ok( () )
 	}
 }
 
 
-impl cluLogIOLock for LogEmpty {
-	#[inline]
-	fn lock_out<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>> {
+impl<'a> cluLogIOLock<'a> for LogEmpty {
+	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
 		cluLogLock::empty_boxed()
 	}
 	
-	#[inline]
-	fn lock_err<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>> {
+	fn lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
 		cluLogLock::empty_boxed()
 	}
 
-	#[inline]
-	fn no_flush_lock_out<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>> {
+	fn no_flush_lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
 		cluLogLock::empty_boxed()
 	}
 
-	#[inline]
-	fn no_flush_lock_err<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>> {
+	fn no_flush_lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
 		cluLogLock::empty_boxed()
 	}
 }

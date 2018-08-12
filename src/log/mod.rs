@@ -1,13 +1,13 @@
 
+pub mod raw_lock;
 #[macro_use]
 pub mod empty;
 #[macro_use]
-pub mod kmsg;
-#[macro_use]
-pub mod std;
+pub mod default;
 #[macro_use]
 pub mod lock;
 pub mod enable;
+pub mod union;
 
 use std::ops::DerefMut;
 use std::io::Write;
@@ -16,48 +16,50 @@ use std::io;
 
 
 #[allow(non_camel_case_types)]
-pub trait cluLog: Send + Sync + cluLogIOLock {
-	fn warning<'a>(&self, args: Arguments<'a>) -> io::Result<()>;
+pub trait cluLog<'a>: cluLogIOLock<'a> + cluLogFlushIO {
+	fn warning<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
-	fn info<'a>(&self, args: Arguments<'a>) -> io::Result<()>;
+	fn info<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
-	fn error<'a>(&self, args: Arguments<'a>) -> io::Result<()>;
+	fn error<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
-	fn panic<'a>(&self, args: Arguments<'a>) -> io::Result<()>;
+	fn panic<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
-	fn unknown<'a>(&self, name: &'a str, args: Arguments<'a>) -> io::Result<()>;
+	fn unknown<'s>(&'a self, name: &'s str, args: Arguments<'s>) -> io::Result<()>;
 	
-	fn print<'a>(&self, args: Arguments<'a>) -> io::Result<()>;
-	fn eprint<'a>(&self, args: Arguments<'a>) -> io::Result<()>;
+	fn print<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
+	fn eprint<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 }
 
 ///Secure outflow blocking
 #[allow(non_camel_case_types)]
-pub trait cluLogIOLock: Send + Sync {
+pub trait cluLogIOLock<'a> {
 	///Blocking threads with automatic cleaning
-	fn lock_out<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>>;
+	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
 
 	///Blocking threads with automatic cleaning
-	fn lock_err<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>>;
+	fn lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
 
 	///Flow blocking without self-cleaning
-	fn no_flush_lock_out<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>>;
+	fn no_flush_lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
 
 	///Flow blocking without self-cleaning
-	fn no_flush_lock_err<'a>(&'a self) -> Box<'a + DerefMut<Target = Write + 'a>>;
+	fn no_flush_lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
 }
+
+
 
 ///Flush of output streams
 #[allow(non_camel_case_types)]
-pub trait cluLogFlushIO: Send + Sync {
+pub trait cluLogFlushIO {
 	///Flush the output stream
-	fn flush_out(&self) -> io::Result<()>;
+	fn flush_out(&mut self) -> io::Result<()>;
 
 	///Flush the err-output stream
-	fn flush_err(&self) -> io::Result<()>;
+	fn flush_err(&mut self) -> io::Result<()>;
 	
 	///Flush Out stream and Err stream
-	fn flush(&self) -> io::Result<()> {
+	fn flush(&mut self) -> io::Result<()> {
 		if let Err(e) = self.flush_out() {
 			return Err(e);
 		}

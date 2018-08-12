@@ -19,12 +19,7 @@ impl<'a, W: Write + 'a> cluLogLock<'a, W> {
 	}
 
 	pub fn boxed(out: W) -> Box<'a + DerefMut<Target = Write + 'a>> {
-		Box::new(cluLogLock(out, PhantomData))
-	}
-
-	#[inline]
-	pub fn impled(out: W) -> impl DerefMut<Target = Write + 'a> + 'a {
-		cluLogLock(out, PhantomData)
+		Box::new(Self::new(out))
 	}
 }
 impl<'a> cluLogLock<'a, EmptyWrite> {
@@ -34,14 +29,8 @@ impl<'a> cluLogLock<'a, EmptyWrite> {
 		Self::new(EmptyWrite)
 	}
 
-	///Use an empty lock, in the heap
 	pub fn empty_boxed() -> Box<'a + DerefMut<Target = Write + 'a>> {
 		Box::new(Self::empty())
-	}
-
-	#[inline(always)]
-	pub fn impled_boxed() -> impl DerefMut<Target = Write + 'a> + 'a {
-		Self::empty()
 	}
 }
 

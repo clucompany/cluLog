@@ -11,31 +11,31 @@ pub enum cluLogWrite {}
 impl LogWrite for cluLogWrite {	
 	
 	#[inline(always)]
-	fn warning<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn warning<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[WAR] {}\n", display)	)
 	}
 	//[WAR] - warning value
 	
 	#[inline(always)]
-	fn info<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn info<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[INF] {}\n", display)	)
 	}
 	//[INF] - info value
 	
 	#[inline(always)]
-	fn error<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn error<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[ERR] {}\n", display)		)
 	}
 	//[ERR] - err value
 	
 	#[inline(always)]
-	fn panic<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn panic<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[PANIC] {}\n", display)	)
 	}
 	//[PANIC] - panic program
 	
 	#[inline(always)]
-	fn unknown<'a>(write: &mut Write, name: &'a str, display: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'a, W: Write>(mut write: W, name: &'a str, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[{}] {}\n", name, display)	)
 	}
 	//[UNK] - unknown 
@@ -43,13 +43,13 @@ impl LogWrite for cluLogWrite {
 	
 	
 	#[inline(always)]
-	fn print<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn print<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[OUT] {}", display)		)
 	}
 	//[OUT] - unknown 
 	
 	#[inline(always)]
-	fn eprint<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn eprint<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(	format_args!("[EOUT] {}", display)		)
 	}
 	//[EOUT] - unknown 

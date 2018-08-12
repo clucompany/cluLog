@@ -25,31 +25,31 @@ pub enum cluLogColorWrite {}
 impl LogWrite for cluLogColorWrite {	
 	
 	#[inline(always)]
-	fn warning<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn warning<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {
 		writen_color!(write, WarningColor, "[WAR] {}", color_args!(bright_white, display))
 	}
 	//[WAR] - warning value
 	
 	#[inline(always)]
-	fn info<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn info<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {
 		writen_color!(write, InfoColor, "[INF] {}", color_args!(bright_white, display))
 	}
 	//[INF] - info value
 	
 	#[inline(always)]
-	fn error<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn error<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {
 		writen_color!(write, ErrColor, "[ERR] {}", color_args!(bright_white, display))
 	}
 	//[ERR] - err value
 	
 	#[inline(always)]
-	fn panic<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn panic<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {
 		writen_color!(write, PanicColor, "[PANIC] {}", color_args!(bright_white, display))
 	}
 	//[PANIC] - panic program
 	
 	#[inline(always)]
-	fn unknown<'a>(write: &mut Write, name: &'a str, display: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'a, W: Write>(write: W, name: &'a str, display: Arguments<'a>) -> io::Result<()> {
 		writen_color!(write, UnkColor, "[{}] {}", name, color_args!(bright_white, display))
 	}
 	//[UNK] - unknown 
@@ -57,13 +57,13 @@ impl LogWrite for cluLogColorWrite {
 	
 	
 	#[inline(always)]
-	fn print<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn print<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(display)
 	}
 	//[OUT] - unknown 
 	
 	#[inline(always)]
-	fn eprint<'a>(write: &mut Write, display: Arguments<'a>) -> io::Result<()> {
+	fn eprint<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
 		write.write_fmt(display)
 	}
 	//[EOUT] - unknown 
