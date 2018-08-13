@@ -1,5 +1,6 @@
 
 
+use log_addition::empty::empty_write::EmptyWrite;
 use std::io::StderrLock;
 use std::io::Stderr;
 use std::io::StdoutLock;
@@ -27,4 +28,9 @@ impl<'a> LogLockRawIO<'a, StderrLock<'a>> for Stderr {
      }
 }
 
-
+impl<'a> LogLockRawIO<'a, EmptyWrite> for EmptyWrite {
+     #[inline(always)]
+     fn lock(&'a self) -> EmptyWrite {
+          self.clone()
+     }
+}

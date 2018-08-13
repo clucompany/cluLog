@@ -1,16 +1,11 @@
 
 pub mod raw_lock;
 #[macro_use]
-pub mod empty;
-#[macro_use]
 pub mod default;
-#[macro_use]
 pub mod lock;
 pub mod enable;
-pub mod union;
 
-use std::ops::DerefMut;
-use std::io::Write;
+use log::lock::LogLockIO;
 use std::fmt::Arguments;
 use std::io;
 
@@ -33,25 +28,6 @@ pub trait cluLog<'a>: LogLockIO<'a> + LogFlushIO {
 
 	fn eprint<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 }
-
-///Secure outflow blocking
-#[allow(non_camel_case_types)]
-pub trait LogLockIO<'a> {
-	///Blocking threads with automatic cleaning
-	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
-
-	///Blocking threads with automatic cleaning
-	fn lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
-
-	///Flow blocking without self-cleaning
-	fn no_flush_lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
-
-	///Flow blocking without self-cleaning
-	fn no_flush_lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>>;
-}
-
-
-
 ///Flush of output streams
 #[allow(non_camel_case_types)]
 pub trait LogFlushIO {

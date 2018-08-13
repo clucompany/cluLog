@@ -2,7 +2,7 @@
 use std::io::Write;
 use std::io;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct EmptyWrite;
 
 impl EmptyWrite {
@@ -24,7 +24,7 @@ impl EmptyWrite {
 
 impl Write for EmptyWrite {
 	#[inline(always)]
-	fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
+	fn write<'a>(&mut self, _buf: &'a [u8]) -> io::Result<usize> {
 		Ok( 0 )
 	}
 
@@ -33,3 +33,5 @@ impl Write for EmptyWrite {
 		Ok( () )
 	}
 }
+
+

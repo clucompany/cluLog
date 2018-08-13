@@ -1,7 +1,7 @@
 
+use log_addition::empty::total::LogTotalEmpty;
+use log_addition::empty::default::LogEmpty;
 use log::LogFlushIO;
-use log::empty::total::LogTotalEmpty;
-use log::empty::LogEmpty;
 use std::marker::PhantomData;
 use log::cluLog;
 use std::io;

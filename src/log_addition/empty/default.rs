@@ -1,16 +1,16 @@
 
-use log::union::LogUnion;
+use log_addition::union::LogUnionConst;
+use log_addition::union::default::LogUnion;
+use log::lock::LogLockIO;
 use log::LogFlushIO;
-use log::LogLockIO;
 use std::ops::DerefMut;
 use log::cluLog;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
-use ::log::lock::cluLogLock;
+use log::lock::default::cluLogLock;
+use log_addition::empty::LogEmptyConst;
 
-pub mod write;
-pub mod total;
 
 #[derive(Debug)]
 pub struct LogEmpty;
@@ -96,3 +96,5 @@ impl<'a> LogLockIO<'a> for LogEmpty {
 		cluLogLock::empty_boxed()
 	}
 }
+
+impl<'a> LogUnionConst<'a> for LogEmpty {}

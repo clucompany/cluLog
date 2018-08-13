@@ -5,36 +5,20 @@ extern crate clucolor;
 pub mod log;
 pub mod log_panic;
 pub mod log_write;
+pub mod log_addition;
 mod macros;
 
-use log::empty::LogEmpty;
 use log::cluLog;
 use std::sync::{Once, ONCE_INIT};
+use log_addition::empty::default::LogEmpty;
 
 
 pub type DefLogWrite = 			self::log_write::			DefLogWrite;
 pub type DefLogPanic = 			self::log_panic::			DefTypeProgramPanic;
-/*pub type Log = cluLog<
-	OutWrite = ::std::io::StdoutLock<'static>, 
-	ErrWrite = ::std::io::StderrLock<'static>
->;
-*/
+
 
 static mut LOGGER: &'static cluLog<'static> = &LogEmpty;
 static LOGGER_INIT: Once = ONCE_INIT;
-
-/*
-pub fn set_log(log: &'static cluLog) -> bool {
-	unsafe {
-		if LOGGER_INIT {
-			return false;
-		}
-		LOGGER_INIT = true;
-		
-		LOGGER = log;
-		true
-	}
-}*/
 
 
 #[inline]
@@ -74,7 +58,7 @@ macro_rules! init_cluLog {
 	
 	(null) => {
 		{
-			use cluLog::log::empty::total::LogTotalEmpty;
+			use cluLog::log_addition::empty::total::LogTotalEmpty;
 
 			cluLog::set_logger(&LogTotalEmpty)
 		}
@@ -82,9 +66,9 @@ macro_rules! init_cluLog {
 	
 	(none) => {
 		{
-			use cluLog::log::empty::LogEmpty;
+			use cluLog::log_addition::empty::default::LogEmpty;
+
 			cluLog::set_logger(&LogEmpty)
-			//cluLog::set_boxed_logger(Box::new(LogEmpty))
 		}
 	};
 	
