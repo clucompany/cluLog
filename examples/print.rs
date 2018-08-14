@@ -4,7 +4,7 @@ extern crate cluLog;
 
 
 fn main() {
-	init_cluLog!();	
+	init_clulog!();	
 	
 	warn!("Warning");
 	inf!("AAAAAA");

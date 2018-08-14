@@ -1,6 +1,5 @@
 
 use std::io::Write;
-use std::ops::DerefMut;
 
 pub mod empty_write;
 pub mod total;
@@ -13,7 +12,7 @@ pub trait LogEmptyConst {
      fn empty() -> Self;
 
      #[inline]
-     fn empty_boxed<'a>() -> Box<'a + DerefMut<Target = Write + 'a>> where Self: 'a + Sized + DerefMut<Target = Write + 'a> {
+     fn empty_boxed<'a>() -> Box<Write + 'a> where Self: Sized + 'a + Write {
 		Box::new(Self::empty())
 	}
 }

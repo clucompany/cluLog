@@ -1,29 +1,28 @@
 
 
 use log_addition::empty::LogEmptyConst;
-use std::ops::Deref;
 use std::fmt::Debug;
 use log_addition::empty::empty_write::EmptyWrite;
-use std::ops::DerefMut;
 use std::marker::PhantomData;
 use std::io::Write;
+use std::io;
 
 ///Blocking threads with automatic cleaning
 #[allow(non_camel_case_types)]
-pub struct cluLogLock<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
+pub struct LogLock<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a> cluLogLock<'a, W> {
+impl<'a, W: Write + 'a> LogLock<'a, W> {
 	#[inline]
 	pub fn new(out: W) -> Self {
-		cluLogLock(out, PhantomData)
+		LogLock(out, PhantomData)
 	}
-
-	pub fn boxed(out: W) -> Box<'a + DerefMut<Target = Write + 'a>> {
+	#[inline]
+	pub fn boxed(out: W) -> Box<Write + 'a> {
 		Box::new(Self::new(out))
 	}
 }
 
-impl<'a> LogEmptyConst for cluLogLock<'a, EmptyWrite> {
+impl<'a> LogEmptyConst for LogLock<'a, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
 		Self::new(EmptyWrite)
@@ -32,32 +31,33 @@ impl<'a> LogEmptyConst for cluLogLock<'a, EmptyWrite> {
 
 
 
-impl<'a, W: Write + 'a> Debug for cluLogLock<'a, W> {
+impl<'a, W: Write + 'a> Debug for LogLock<'a, W> {
 	#[inline]
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("cluLogLock { .. }")
+		f.pad("LogLock { .. }")
 	}
 }
 
-impl<'a, W: Write + 'a> Deref for cluLogLock<'a, W> {
-	type Target = Write + 'a ;
-
-	#[inline(always)]
-	fn deref<'l>(&'l self) -> &'l Self::Target {
-		&self.0
-	}
-}
-
-impl<'a, W: Write + 'a> DerefMut for cluLogLock<'a, W> {
-	#[inline(always)]
-	fn deref_mut<'l>(&'l mut self) -> &'l mut Self::Target {
-		&mut self.0
-	}
-}
-
-impl<'a, W: Write + 'a> Drop for cluLogLock<'a, W> {
+impl<'a, W: Write + 'a> Drop for LogLock<'a, W> {
 	#[inline]
 	fn drop(&mut self) {
 		let _e = self.0.flush();
 	}
 }
+
+impl<'a, W: Write + 'a> Write for LogLock<'a, W> {
+     #[inline(always)]
+     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+          self.0.write(buf)
+     }
+     #[inline(always)]
+     fn flush(&mut self) -> io::Result<()> {
+          self.0.flush()
+     }
+}
+
+/*
+impl<'a, W: Write + 'a, W2: Write + 'a> Add<LogLock<'a, W>> for LogLock<'a, W> {
+
+}
+*/

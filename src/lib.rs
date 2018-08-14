@@ -46,7 +46,7 @@ pub fn as_log<'a>() -> &'a cluLog<'static> {
 
 
 #[macro_export]
-macro_rules! init_cluLog {
+macro_rules! init_clulog {
 	() => {
 		{
 			cluLog::set_boxed_logger(cluLog::log::default::LogStd::default_box());
@@ -69,6 +69,12 @@ macro_rules! init_cluLog {
 			use cluLog::log_addition::empty::default::LogEmpty;
 
 			cluLog::set_logger(&LogEmpty)
+		}
+	};
+	(union, $a:expr, $b:expr) => {
+		{
+			
+			clucolor::set_boxed_logger($a.union($b).to_box());
 		}
 	};
 	

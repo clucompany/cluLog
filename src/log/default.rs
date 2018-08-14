@@ -1,6 +1,5 @@
 
 use log_addition::union::LogUnionConst;
-use log_addition::union::default::LogUnion;
 use log_addition::empty::empty_write::EmptyWrite;
 use log_addition::empty::LogEmptyConst;
 use std::ops::DerefMut;
@@ -20,8 +19,8 @@ use std::fmt::Arguments;
 use std::io::Write;
 use log::cluLog;
 use std::io;
-use log::lock::default::cluLogLock;
-use log::lock::default_no_flush::cluLogLockNoFlush;
+use log::lock::default_no_flush::LogLockNoFlush;
+use log::lock::default::LogLock;
 
 #[derive(Debug)]
 pub struct LogStd<'a, W: LogWrite, P: LogPanic, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> {
@@ -67,13 +66,12 @@ impl<'a, W: LogWrite, P: LogPanic, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, 
 	}
 }
 
-impl<'a, W: 'a +  LogWrite, P: 'a +  LogPanic> LogEmptyConst for LogStd<'a, W, P, EmptyWrite, EmptyWrite, EmptyWrite, EmptyWrite> {
+impl<'a> LogEmptyConst for LogStd<'a, DefLogWrite, DefLogPanic, EmptyWrite, EmptyWrite, EmptyWrite, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
 		Self::new(EmptyWrite, EmptyWrite)
 	}
 }
-
 /*
 impl<'a, W: LogWrite, P: LogPanic, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogUnionConst for LogStd<'a, W, P, O, E, OL, EL> {
 	fn union<'a, B: cluLog<'a>>(self, b: B) -> LogUnion<'a, Self, B> {
@@ -127,20 +125,20 @@ impl<'a, W: LogWrite, P: LogPanic, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, 
 }
 	
 impl<'a, W: LogWrite, P: LogPanic, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a + Write , EL: 'a +  Write> LogLockIO<'a> for LogStd<'a, W, P, O, E, OL, EL> {
-	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLock::boxed(self.out.lock())
+	fn lock_out(&'a self) -> Box<'a + Write> {
+		LogLock::boxed(self.out.lock())
 	}
 	
-	fn lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLock::boxed(self.err.lock())
+	fn lock_err(&'a self) -> Box<'a + Write> {
+		LogLock::boxed(self.err.lock())
 	}
 
-	fn no_flush_lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLockNoFlush::boxed(self.out.lock())
+	fn no_flush_lock_out(&'a self) -> Box<'a + Write> {
+		LogLockNoFlush::boxed(self.out.lock())
 	}
 
-	fn no_flush_lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLockNoFlush::boxed(self.err.lock())
+	fn no_flush_lock_err(&'a self) -> Box<'a + Write> {
+		LogLockNoFlush::boxed(self.err.lock())
 	}
 }
 

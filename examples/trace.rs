@@ -6,7 +6,7 @@ extern crate cluLog;
 pub struct Point(u32, f32);
 
 fn main() {
-     init_cluLog!();
+     init_clulog!();
 
 
      let a = Point::default();

@@ -83,17 +83,20 @@ macro_rules! unk {
 ///Blocking out threads
 #[macro_export]
 macro_rules! lock {
+	() => (
+		lock!(out)
+	);
 	(out) => (
-		::cluLog::as_log().lock_out()
+		lock_out!()
 	);
 	(err) => (
-		::cluLog::as_log().lock_err()
+		lock_err!()
 	);
 	(no_flush_out) => (
-		::cluLog::as_log().no_flush_lock_out()
+		lock_out!(no_flush)
 	);
 	(no_flush_err) => (
-		::cluLog::as_log().no_flush_lock_err()
+		lock_err!(no_flush)
 	);
 }
 
@@ -101,10 +104,10 @@ macro_rules! lock {
 #[macro_export]
 macro_rules! lock_out {
 	() => {
-		lock!(out)
+		::cluLog::as_log().lock_out()
 	};
 	(no_flush) => {
-		lock!(no_flush_out)
+		::cluLog::as_log().no_flush_lock_out()
 	};
 }
 
@@ -112,10 +115,10 @@ macro_rules! lock_out {
 #[macro_export]
 macro_rules! lock_err {
 	() => {
-		lock!(err)
+		::cluLog::as_log().lock_err()
 	};
 	(no_flush) => {
-		lock!(no_flush_err)
+		::cluLog::as_log().no_flush_lock_err()
 	};
 }
 
@@ -151,7 +154,7 @@ macro_rules! flush_err {
 #[macro_export]
 macro_rules! print {
 	($($arg:tt)*) => {
-		::cluLog::as_log().print(format_args!($($arg)*));
+		::cluLog::as_log().print( format_args!($($arg)*) );
 	}
 }
 

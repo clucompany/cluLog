@@ -1,62 +1,49 @@
 
 use log_addition::empty::LogEmptyConst;
-use std::ops::Deref;
 use log_addition::empty::empty_write::EmptyWrite;
-use std::ops::DerefMut;
 use std::marker::PhantomData;
 use std::io::Write;
 use std::fmt::Debug;
+use std::io;
 
 ///Flow blocking without self-cleaning
 #[allow(non_camel_case_types)]
-pub struct cluLogLockNoFlush<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
+pub struct LogLockNoFlush<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a> cluLogLockNoFlush<'a, W> {
+impl<'a, W: Write + 'a> LogLockNoFlush<'a, W> {
 	#[inline]
 	pub fn new(out: W) -> Self {
-		cluLogLockNoFlush(out, PhantomData)
+		LogLockNoFlush(out, PhantomData)
 	}
-
-	pub fn boxed(out: W) -> Box<'a + DerefMut<Target = Write + 'a>> {
-		Box::new(cluLogLockNoFlush(out, PhantomData))
-	}
-
 	#[inline]
-	pub fn impled(out: W) -> impl DerefMut<Target = Write + 'a> + 'a {
-		cluLogLockNoFlush(out, PhantomData)
+	pub fn boxed(out: W) -> Box<Write + 'a> {
+		Box::new(Self::new(out))
 	}
 }
 
 
-impl<'a> LogEmptyConst for cluLogLockNoFlush<'a, EmptyWrite> {
+impl<'a> LogEmptyConst for LogLockNoFlush<'a, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
-		cluLogLockNoFlush::new(EmptyWrite)
+		LogLockNoFlush::new(EmptyWrite)
 	}
 }
 
-
-impl<'a, W: Write + 'a> Debug for cluLogLockNoFlush<'a, W> {
+impl<'a, W: Write + 'a> Debug for LogLockNoFlush<'a, W> {
 	#[inline]
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("cluLogLockNoFlush { .. }")
+		f.pad("LogLockNoFlush { .. }")
 	}
 }
 
-impl<'a, W: Write + 'a> Deref for cluLogLockNoFlush<'a, W> {
-	type Target = Write + 'a ;
-
-	#[inline(always)]
-	fn deref<'l>(&'l self) -> &'l Self::Target {
-		&self.0
-	}
+impl<'a, W: Write + 'a> Write for LogLockNoFlush<'a, W> {
+     #[inline(always)]
+     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+          self.0.write(buf)
+     }
+     #[inline(always)]
+     fn flush(&mut self) -> io::Result<()> {
+          self.0.flush()
+     }
 }
-
-impl<'a, W: Write + 'a> DerefMut for cluLogLockNoFlush<'a, W> {
-	#[inline(always)]
-	fn deref_mut<'l>(&'l mut self) -> &'l mut Self::Target {
-		&mut self.0
-	}
-}
-
 

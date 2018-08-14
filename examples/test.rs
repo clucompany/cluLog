@@ -27,7 +27,7 @@ fn main() {
 			num = 1;
 		}
 	}*/
-	init_cluLog!(none);
+	init_clulog!(none);
 	
 	unk!("aa", "AAA {} {}", 23243, 21);
 	println!("12");

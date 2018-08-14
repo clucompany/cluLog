@@ -3,13 +3,13 @@ use log_addition::union::LogUnionConst;
 use log_addition::union::default::LogUnion;
 use log::lock::LogLockIO;
 use log::LogFlushIO;
-use std::ops::DerefMut;
 use log::cluLog;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
-use log::lock::default::cluLogLock;
 use log_addition::empty::LogEmptyConst;
+use log::lock::default::LogLock;
+use log::lock::default_no_flush::LogLockNoFlush;
 
 
 #[derive(Debug)]
@@ -18,11 +18,6 @@ pub struct LogEmpty;
 impl LogEmpty {
 	pub fn new() -> Self {
 		LogEmpty
-	}
-
-	#[inline]
-	pub fn union<'a>() -> LogUnion<'a, LogEmpty, LogEmpty> {
-		LogUnion::empty()
 	}
 }
 
@@ -80,20 +75,20 @@ impl LogFlushIO for LogEmpty {
 
 
 impl<'a> LogLockIO<'a> for LogEmpty {
-	fn lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLock::empty_boxed()
-	}
-	
-	fn lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLock::empty_boxed()
+	fn lock_out(&'a self) -> Box<Write + 'a> {
+		LogLock::empty_boxed()
 	}
 
-	fn no_flush_lock_out<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLock::empty_boxed()
+	fn lock_err(&'a self) -> Box<Write + 'a> {
+		LogLock::empty_boxed()
 	}
 
-	fn no_flush_lock_err<'l: 'a>(&'l self) -> Box<'l + DerefMut<Target = Write + 'l>> {
-		cluLogLock::empty_boxed()
+	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+		LogLockNoFlush::empty_boxed()
+	}
+
+	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+		LogLockNoFlush::empty_boxed()
 	}
 }
 
