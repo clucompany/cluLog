@@ -1,4 +1,5 @@
 
+
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use log_addition::empty::empty_write::EmptyWrite;

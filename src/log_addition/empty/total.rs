@@ -1,11 +1,9 @@
 
 
-use log::cluLogStatic;
-use log::cluLogExtend;
-use log::Log;
-use DefLogPanic;
+use log::LogStatic;
+use log::LogExtend;
+use log::LogBase;
 use log_addition::union::LogUnionConst;
-use log_addition::union::default::LogUnion;
 use log::lock::LogLockIO;
 use log::LogFlushIO;
 use std::io::Write;
@@ -25,7 +23,7 @@ impl LogTotalEmpty {
 }
 
 
-impl<'a> Log<'a> for LogTotalEmpty {
+impl<'a> LogBase<'a> for LogTotalEmpty {
 	#[inline(always)]
 	fn warning<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
@@ -99,5 +97,5 @@ impl<'a> LogLockIO<'a> for LogTotalEmpty {
 
 
 impl<'a> LogUnionConst<'a> for LogTotalEmpty {}
-impl<'a> cluLogStatic<'a> for LogTotalEmpty {}
-impl<'a> cluLogExtend<'a> for LogTotalEmpty {}
+impl<'a> LogStatic<'a> for LogTotalEmpty {}
+impl<'a> LogExtend<'a> for LogTotalEmpty {}

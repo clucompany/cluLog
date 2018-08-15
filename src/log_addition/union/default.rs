@@ -1,26 +1,26 @@
 
-use std::io::Stderr;
-use log::cluLogStatic;
-use log::Log;
+//!Combining several log systems into one.
+
+
+use log::LogStatic;
+use log::LogBase;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use log::lock::LogLockIO;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::total::LogTotalEmpty;
-use log_addition::empty::default::LogEmpty;
 use log::LogFlushIO;
 use std::marker::PhantomData;
 use std::io;
 use log_addition::union::lock::default::UnionLock;
 use log_addition::union::lock::default_no_flush::UnionLockNoFlush;
 use log_addition::union::LogUnionConst;
-use log::cluLogExtend;
-use std::io::Stdout;
+use log::LogExtend;
 
-pub struct LogUnion<'a, A: 'a + cluLogExtend<'a> + Sized, B: 'a + cluLogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
+pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnion<'a, A, B, Panic> {
      #[inline]
      pub fn new(a: A, b: B) -> Self {
           LogUnion(
@@ -43,7 +43,7 @@ impl<'a, Panic: LogPanic> LogEmptyConst for LogUnion<'a, LogTotalEmpty, LogTotal
 
 
 
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> LogFlushIO for LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlushIO for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
      fn flush_out(&mut self) -> io::Result<()> {
           if let Err(e) = self.0.flush_out() {
@@ -70,7 +70,7 @@ impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> Lo
 }
 
 
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> Log<'a> for LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogBase<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
 	fn warning<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
 		if let Err(e) = self.0.warning(args) {
@@ -135,7 +135,7 @@ impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> Lo
 
 
 	
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
 	fn lock_out(&'a self) -> Box<'a + Write> {
 		UnionLock::boxed(self.0.lock_out(), self.1.lock_out())
@@ -162,7 +162,7 @@ impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> Lo
 
 
 
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> From< (A, B) > for LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> From< (A, B) > for LogUnion<'a, A, B, Panic> {
      #[inline]
      fn from((a, b): (A, B)) -> Self {
           Self::new(a, b)
@@ -170,6 +170,6 @@ impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> Fr
 }
 
 
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> LogUnionConst<'a> for LogUnion<'a, A, B, Panic> {}
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> cluLogExtend<'a> for LogUnion<'a, A, B, Panic> {}
-impl<'a, A: 'a + cluLogExtend<'a>, B: 'a + cluLogExtend<'a>, Panic: LogPanic> cluLogStatic<'a> for LogUnion<'a, A, B, Panic> where Self: 'static {}
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnionConst<'a> for LogUnion<'a, A, B, Panic> {}
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogExtend<'a> for LogUnion<'a, A, B, Panic> {}
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogStatic<'a> for LogUnion<'a, A, B, Panic> where Self: 'static {}

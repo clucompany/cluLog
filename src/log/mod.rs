@@ -5,23 +5,26 @@ pub mod default;
 pub mod lock;
 pub mod enable;
 
-use log_addition::empty::LogEmptyConst;
 use log_addition::union::LogUnionConst;
 use log::lock::LogLockIO;
 use std::fmt::Arguments;
 use std::io;
 
 
-pub trait cluLogStatic<'a>: Log<'a> + LogLockIO<'a> + LogFlushIO {
+#[allow(non_camel_case_types)]
+///An empty implementation allows you to use the current log system as the main
+pub trait LogStatic<'a>: LogBase<'a> + LogLockIO<'a> + LogFlushIO {
 
 }
 
-pub trait cluLogExtend<'a>: Log<'a> + LogLockIO<'a> + LogFlushIO + LogUnionConst<'a> /*+ LogEmptyConst*/ {
+#[allow(non_camel_case_types)]
+///Empty implementation allows you to fully manipulate the current system of journals
+pub trait LogExtend<'a>: LogBase<'a> + LogLockIO<'a> + LogFlushIO + LogUnionConst<'a> /*+ LogEmptyConst*/ {
 
 }
 
 
-pub trait Log<'a> {
+pub trait LogBase<'a> {
 	fn warning<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
 	fn info<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;

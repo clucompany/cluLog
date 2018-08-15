@@ -9,7 +9,7 @@ use std::io::Stdout;
 
 //Raw internal locking method
 #[allow(non_camel_case_types)]
-pub trait LogLockRawIO<'a, W: Write + 'a>: Write + Send + Sync {
+pub trait LogLockRawIO<'a, W: Write + 'a = Self>: Write + Send + Sync {
      ///Internal method
 	fn lock(&'a self) -> W;
 }
@@ -28,7 +28,7 @@ impl<'a> LogLockRawIO<'a, StderrLock<'a>> for Stderr {
      }
 }
 
-impl<'a> LogLockRawIO<'a, EmptyWrite> for EmptyWrite {
+impl<'a> LogLockRawIO<'a> for EmptyWrite {
      #[inline(always)]
      fn lock(&'a self) -> EmptyWrite {
           self.clone()

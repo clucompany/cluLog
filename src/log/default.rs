@@ -16,9 +16,9 @@ use log_write::LogWrite;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
-use log::cluLogExtend;
-use log::cluLogStatic;
-use log::Log;
+use log::LogExtend;
+use log::LogStatic;
+use log::LogBase;
 use std::io;
 use log::lock::default_no_flush::LogLockNoFlush;
 use log::lock::default::LogLock;
@@ -81,7 +81,7 @@ impl<'a, W: LogWrite, P: LogPanic, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, 
 }*/
 
 
-impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a + Write, EL: 'a +  Write> Log<'a> for LogStd<'a, W, P, O, E, OL, EL> {
+impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a + Write, EL: 'a +  Write> LogBase<'a> for LogStd<'a, W, P, O, E, OL, EL> {
 	fn warning<'l>(&'a self, args: Arguments) -> io::Result<()> {
 		W::warning(self.out.lock(), args)
 	}
@@ -146,5 +146,5 @@ impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'
 
 
 impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogUnionConst<'a> for LogStd<'a, W, P, O, E, OL, EL> {}
-impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> cluLogStatic<'a> for LogStd<'a, W, P, O, E, OL, EL> {}
-impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> cluLogExtend<'a> for LogStd<'a, W, P, O, E, OL, EL> {}
+impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogStatic<'a> for LogStd<'a, W, P, O, E, OL, EL> {}
+impl<'a, W: LogWrite, P: LogPanic<W>, O: LogLockRawIO<'a, OL>, E: LogLockRawIO<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogExtend<'a> for LogStd<'a, W, P, O, E, OL, EL> {}

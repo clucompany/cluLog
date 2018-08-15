@@ -5,15 +5,14 @@ use std::marker::PhantomData;
 use std::io::StderrLock;
 use std::io::StdoutLock;
 use log::raw_lock::LogLockRawIO;
-use log::cluLogExtend;
-use log::cluLogStatic;
-use log::Log;
+use log::LogExtend;
+use log::LogStatic;
+use log::LogBase;
 use log_addition::union::LogUnionConst;
 use log::lock::LogLockIO;
 use log::LogFlushIO;
 use std::fmt::Arguments;
 use std::io;
-use log_addition::empty::LogEmptyConst;
 use log::lock::default::LogLock;
 use log::lock::default_no_flush::LogLockNoFlush;
 use std::io::Write;
@@ -37,7 +36,7 @@ impl<'a> Default for LogEmpty<'a, Stdout, Stderr> {
 }
 
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> Log<'a> for LogEmpty<'a, W, W2> {
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogBase<'a> for LogEmpty<'a, W, W2> {
 	#[inline(always)]
 	fn warning<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
@@ -109,5 +108,5 @@ impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a
 }
 
 impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogUnionConst<'a> for LogEmpty<'a, W, W2> {}
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> cluLogStatic<'a> for LogEmpty<'a, W, W2> {}
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> cluLogExtend<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogStatic<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogExtend<'a> for LogEmpty<'a, W, W2> {}

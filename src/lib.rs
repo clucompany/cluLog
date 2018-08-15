@@ -9,8 +9,7 @@ pub mod log_addition;
 mod macros;
 
 use log_addition::empty::total::LogTotalEmpty;
-use log_addition::empty::default::LogEmpty;
-use log::cluLogStatic;
+use log::LogStatic;
 use std::sync::{Once, ONCE_INIT};
 
 
@@ -18,12 +17,12 @@ pub type DefLogWrite = 			self::log_write::			DefLogWrite;
 pub type DefLogPanic = 			self::log_panic::			DefTypeProgramPanic;
 
 
-static mut LOGGER: &'static cluLogStatic<'static> = &LogTotalEmpty;
+static mut LOGGER: &'static LogStatic<'static> = &LogTotalEmpty;
 static LOGGER_INIT: Once = ONCE_INIT;
 
 
 #[inline]
-pub fn set_logger(log: &'static cluLogStatic<'static>) {
+pub fn set_logger(log: &'static LogStatic<'static>) {
 	LOGGER_INIT.call_once(|| {
 		unsafe {
 			LOGGER = log;
@@ -34,14 +33,14 @@ pub fn set_logger(log: &'static cluLogStatic<'static>) {
 
 
 #[inline]
-pub fn set_boxed_logger(log: Box<cluLogStatic<'static>>) {
+pub fn set_boxed_logger(log: Box<LogStatic<'static>>) {
 	set_logger( unsafe { &*Box::into_raw(log) } )
 }
 
 
 ///Obtaining a link to active logging
 #[inline(always)]
-pub fn as_log<'a>() -> &'a cluLogStatic<'static> {
+pub fn as_log<'a>() -> &'a LogStatic<'static> {
 	unsafe { LOGGER }
 }
 
