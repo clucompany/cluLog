@@ -3,7 +3,7 @@
 extern crate cluLog;
 
 fn main() {
-	init_clulog!();
+	init_clulog!(none);
 	
      inf!("Test");
 	

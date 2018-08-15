@@ -1,67 +1,83 @@
 
+use std::io::Stderr;
+use std::io::Stdout;
+use std::marker::PhantomData;
+use std::io::StderrLock;
+use std::io::StdoutLock;
+use log::raw_lock::LogLockRawIO;
+use log::cluLogExtend;
+use log::cluLogStatic;
+use log::Log;
 use log_addition::union::LogUnionConst;
-use log_addition::union::default::LogUnion;
 use log::lock::LogLockIO;
 use log::LogFlushIO;
-use log::cluLog;
 use std::fmt::Arguments;
-use std::io::Write;
 use std::io;
 use log_addition::empty::LogEmptyConst;
 use log::lock::default::LogLock;
 use log::lock::default_no_flush::LogLockNoFlush;
+use std::io::Write;
 
 
 #[derive(Debug)]
-pub struct LogEmpty;
+pub struct LogEmpty<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>>(W, W2, PhantomData<&'a ()>);
 
-impl LogEmpty {
-	pub fn new() -> Self {
-		LogEmpty
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogEmpty<'a, W, W2> {
+	#[inline]
+	pub fn new(w: W, w2: W2) -> Self {
+		LogEmpty(w, w2, PhantomData)
 	}
 }
 
-impl<'l> cluLog<'l> for LogEmpty {
+impl<'a> Default for LogEmpty<'a, Stdout, Stderr> {
+	#[inline]
+	fn default() -> LogEmpty<'a, Stdout, Stderr> {
+		Self::new(io::stdout(), io::stderr())
+	}
+}
+
+
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> Log<'a> for LogEmpty<'a, W, W2> {
 	#[inline(always)]
-	fn warning<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn warning<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 
 	#[inline(always)]
-	fn trace<'a>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'a>) -> io::Result<()> {
+	fn trace<'l>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn info<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn info<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn error<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn error<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn panic<'a>(&self, args: Arguments<'a>) -> io::Result<()> {
+	fn panic<'l>(&self, args: Arguments<'l>) -> io::Result<()> {
 		panic!("{}", args);
 	}
 	
 	#[inline(always)]	
-	fn unknown<'a>(&self, _name: &'static str, _args: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'l>(&self, _name: &'static str, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
-	fn print<'a>(&self, args: Arguments<'a>) -> io::Result<()> {
-		io::stdout().write_fmt(args)
+	fn print<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
+		self.0.lock().write_fmt(args)
 	}
 	
-	fn eprint<'a>(&self, args: Arguments<'a>) -> io::Result<()> {
-		io::stderr().write_fmt(args)
+	fn eprint<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
+		self.1.lock().write_fmt(args)
 	}
 }
 
-impl LogFlushIO for LogEmpty {
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogFlushIO for LogEmpty<'a, W, W2> {
 	#[inline(always)]	
 	fn flush_out(&mut self) -> io::Result<()> {
 		Ok( () )
@@ -74,22 +90,24 @@ impl LogFlushIO for LogEmpty {
 }
 
 
-impl<'a> LogLockIO<'a> for LogEmpty {
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
 	fn lock_out(&'a self) -> Box<Write + 'a> {
-		LogLock::empty_boxed()
+		LogLock::boxed(self.0.lock())
 	}
 
 	fn lock_err(&'a self) -> Box<Write + 'a> {
-		LogLock::empty_boxed()
+		LogLock::boxed(self.1.lock())
 	}
 
 	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
-		LogLockNoFlush::empty_boxed()
+		LogLockNoFlush::boxed(self.0.lock())
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
-		LogLockNoFlush::empty_boxed()
+		LogLockNoFlush::boxed(self.0.lock())
 	}
 }
 
-impl<'a> LogUnionConst<'a> for LogEmpty {}
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogUnionConst<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> cluLogStatic<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> cluLogExtend<'a> for LogEmpty<'a, W, W2> {}

@@ -8,9 +8,9 @@ use log_write::LogWrite;
 #[derive(Debug)]
 pub enum DefaultPanic { }
 
-impl LogPanic for DefaultPanic {
+impl<WRITER: LogWrite> LogPanic<WRITER> for DefaultPanic {
 	#[inline(always)]
-	fn panic<'a, WRITER: LogWrite, W: Write>(_write: W, arg: Arguments<'a>) -> io::Result<()> {
+	fn panic<'a, W: Write>(_write: W, arg: Arguments<'a>) -> io::Result<()> {
 		panic!("{}", arg);
 	}
 }

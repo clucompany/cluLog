@@ -14,6 +14,10 @@ impl<'a, W: Write + 'a, W2: Write + 'a> UnionLock<'a, W, W2> {
 	pub fn new(out: W, out2: W2) -> Self {
 		UnionLock(out, out2, PhantomData)
 	}
+     #[inline]
+	pub fn boxed(out: W, out2: W2) -> Box<Write + 'a> {
+		Box::new(Self::new(out, out2))
+	}
 }
 
 impl<'a> LogEmptyConst for UnionLock<'a, EmptyWrite, EmptyWrite> {

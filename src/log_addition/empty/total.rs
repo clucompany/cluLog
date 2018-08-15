@@ -1,12 +1,15 @@
 
 
+use log::cluLogStatic;
+use log::cluLogExtend;
+use log::Log;
+use DefLogPanic;
 use log_addition::union::LogUnionConst;
 use log_addition::union::default::LogUnion;
 use log::lock::LogLockIO;
 use log::LogFlushIO;
 use std::io::Write;
 use std::fmt::Arguments;
-use log::cluLog;
 use std::io;
 use log::lock::default::LogLock;
 use log::lock::default_no_flush::LogLockNoFlush;
@@ -19,51 +22,47 @@ impl LogTotalEmpty {
 	pub fn new() -> Self {
 		LogTotalEmpty
 	}
-	#[inline]
-	pub fn union<'a>() -> LogUnion<'a, LogTotalEmpty, LogTotalEmpty> {
-		LogUnion::total_empty()
-	}
 }
 
 
-impl<'l> cluLog<'l> for LogTotalEmpty {
+impl<'a> Log<'a> for LogTotalEmpty {
 	#[inline(always)]
-	fn warning<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn warning<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn info<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn info<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn error<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn error<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn panic<'a>(&self, args: Arguments<'a>) -> io::Result<()> {
+	fn panic<'l>(&self, args: Arguments<'l>) -> io::Result<()> {
 		panic!("{}", args);
 	}
 	
 	#[inline(always)]	
-	fn unknown<'a>(&self, _name: &'static str, _args: Arguments<'a>) -> io::Result<()> {
+	fn unknown<'l>(&self, _name: &'static str, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 
 	#[inline(always)]
-	fn trace<'a>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'a>) -> io::Result<()> {
+	fn trace<'l>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]	
-	fn print<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn print<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]	
-	fn eprint<'a>(&self, _args: Arguments<'a>) -> io::Result<()> {
+	fn eprint<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 }
@@ -100,3 +99,5 @@ impl<'a> LogLockIO<'a> for LogTotalEmpty {
 
 
 impl<'a> LogUnionConst<'a> for LogTotalEmpty {}
+impl<'a> cluLogStatic<'a> for LogTotalEmpty {}
+impl<'a> cluLogExtend<'a> for LogTotalEmpty {}

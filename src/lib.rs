@@ -8,21 +8,22 @@ pub mod log_write;
 pub mod log_addition;
 mod macros;
 
-use log::cluLog;
-use std::sync::{Once, ONCE_INIT};
+use log_addition::empty::total::LogTotalEmpty;
 use log_addition::empty::default::LogEmpty;
+use log::cluLogStatic;
+use std::sync::{Once, ONCE_INIT};
 
 
 pub type DefLogWrite = 			self::log_write::			DefLogWrite;
 pub type DefLogPanic = 			self::log_panic::			DefTypeProgramPanic;
 
 
-static mut LOGGER: &'static cluLog<'static> = &LogEmpty;
+static mut LOGGER: &'static cluLogStatic<'static> = &LogTotalEmpty;
 static LOGGER_INIT: Once = ONCE_INIT;
 
 
 #[inline]
-pub fn set_logger(log: &'static cluLog<'static>) {
+pub fn set_logger(log: &'static cluLogStatic<'static>) {
 	LOGGER_INIT.call_once(|| {
 		unsafe {
 			LOGGER = log;
@@ -33,14 +34,14 @@ pub fn set_logger(log: &'static cluLog<'static>) {
 
 
 #[inline]
-pub fn set_boxed_logger(log: Box<cluLog<'static>>) {
+pub fn set_boxed_logger(log: Box<cluLogStatic<'static>>) {
 	set_logger( unsafe { &*Box::into_raw(log) } )
 }
 
 
 ///Obtaining a link to active logging
 #[inline(always)]
-pub fn as_log<'a>() -> &'a cluLog<'static> {
+pub fn as_log<'a>() -> &'a cluLogStatic<'static> {
 	unsafe { LOGGER }
 }
 
@@ -68,13 +69,25 @@ macro_rules! init_clulog {
 		{
 			use cluLog::log_addition::empty::default::LogEmpty;
 
-			cluLog::set_logger(&LogEmpty)
+			cluLog::set_boxed_logger(Box::new(LogEmpty::default()))
+		}
+	};
+	(total_none) => {
+		{
+			use cluLog::log_addition::empty::total::LogTotalEmpty;
+
+			cluLog::set_logger(&LogTotalEmpty);
+		}
+	};
+	(union, $panic:tt, $a:expr, $b:expr) => {
+		{
+			
+			cluLog::set_boxed_logger(Box::new($a.union::<$panic, _>($b)));
 		}
 	};
 	(union, $a:expr, $b:expr) => {
 		{
-			
-			clucolor::set_boxed_logger($a.union($b).to_box());
+			cluLog::set_boxed_logger(Box::new($a.union::<DefLogPanic, _>($b)));
 		}
 	};
 	

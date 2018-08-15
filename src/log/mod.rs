@@ -5,13 +5,23 @@ pub mod default;
 pub mod lock;
 pub mod enable;
 
+use log_addition::empty::LogEmptyConst;
+use log_addition::union::LogUnionConst;
 use log::lock::LogLockIO;
 use std::fmt::Arguments;
 use std::io;
 
 
-#[allow(non_camel_case_types)]
-pub trait cluLog<'a>: LogLockIO<'a> + LogFlushIO {
+pub trait cluLogStatic<'a>: Log<'a> + LogLockIO<'a> + LogFlushIO {
+
+}
+
+pub trait cluLogExtend<'a>: Log<'a> + LogLockIO<'a> + LogFlushIO + LogUnionConst<'a> /*+ LogEmptyConst*/ {
+
+}
+
+
+pub trait Log<'a> {
 	fn warning<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
 	fn info<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
@@ -28,6 +38,9 @@ pub trait cluLog<'a>: LogLockIO<'a> + LogFlushIO {
 
 	fn eprint<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 }
+
+
+
 ///Flush of output streams
 #[allow(non_camel_case_types)]
 pub trait LogFlushIO {
