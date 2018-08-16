@@ -1,5 +1,8 @@
 
 
+use log::lock::default_no_flush::LogLockNoFlush;
+use log::lock::default::LogLock;
+use std::fs::File;
 use log_addition::empty::empty_write::EmptyWrite;
 use std::io::StderrLock;
 use std::io::Stderr;
@@ -32,5 +35,18 @@ impl<'a> LogLockRawIO<'a> for EmptyWrite {
      #[inline(always)]
      fn lock(&'a self) -> EmptyWrite {
           self.clone()
+     }
+}
+impl<'a> LogLockRawIO<'a, LogLock<'a, Self>> for &'a File {
+     #[inline(always)]
+     fn lock(&'a self) -> LogLock<'a, Self> {
+          LogLock::new(self)
+     }
+}
+
+impl<'a> LogLockRawIO<'a, LogLockNoFlush<'a, Self>> for &'a File {
+     #[inline(always)]
+     fn lock(&'a self) -> LogLockNoFlush<'a, Self> {
+          LogLockNoFlush::new(self)
      }
 }

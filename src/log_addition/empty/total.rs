@@ -5,7 +5,7 @@ use log::LogExtend;
 use log::LogBase;
 use log_addition::union::LogUnionConst;
 use log::lock::LogLockIO;
-use log::LogFlushIO;
+use log::LogFlush;
 use std::io::Write;
 use std::fmt::Arguments;
 use std::io;
@@ -65,7 +65,7 @@ impl<'a> LogBase<'a> for LogTotalEmpty {
 	}
 }
 
-impl LogFlushIO for LogTotalEmpty {
+impl LogFlush for LogTotalEmpty {
 	#[inline(always)]	
 	fn flush_out(&mut self) -> io::Result<()> {
 		Ok( () )

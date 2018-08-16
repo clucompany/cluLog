@@ -10,7 +10,7 @@ use log::LogStatic;
 use log::LogBase;
 use log_addition::union::LogUnionConst;
 use log::lock::LogLockIO;
-use log::LogFlushIO;
+use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
 use log::lock::default::LogLock;
@@ -76,7 +76,7 @@ impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a
 	}
 }
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogFlushIO for LogEmpty<'a, W, W2> {
+impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogFlush for LogEmpty<'a, W, W2> {
 	#[inline(always)]	
 	fn flush_out(&mut self) -> io::Result<()> {
 		Ok( () )

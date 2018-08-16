@@ -7,7 +7,7 @@ use log_write::LogWrite;
 use std::io;
 use log_write::DefLogWrite;
 
-pub type DefTypeProgramPanic = self::default::DefaultPanic;
+pub type DefaultPanic = self::default::DefaultPanic;
 
 
 pub trait LogPanic<WRITER: LogWrite = DefLogWrite> {

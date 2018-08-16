@@ -10,7 +10,7 @@ use std::io::Write;
 use log::lock::LogLockIO;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::total::LogTotalEmpty;
-use log::LogFlushIO;
+use log::LogFlush;
 use std::marker::PhantomData;
 use std::io;
 use log_addition::union::lock::default::UnionLock;
@@ -31,6 +31,10 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnion
      pub fn boxed(a: A, b: B) -> Box<Self> {
           Box::new(Self::new(a, b))
      }
+     #[inline]
+     pub fn to_box(self) -> Box<Self> {
+          Box::new(self)
+     }
 }
 
 
@@ -43,7 +47,7 @@ impl<'a, Panic: LogPanic> LogEmptyConst for LogUnion<'a, LogTotalEmpty, LogTotal
 
 
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlushIO for LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
      fn flush_out(&mut self) -> io::Result<()> {
           if let Err(e) = self.0.flush_out() {

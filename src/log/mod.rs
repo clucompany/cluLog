@@ -1,6 +1,5 @@
 
 pub mod raw_lock;
-#[macro_use]
 pub mod default;
 pub mod lock;
 pub mod enable;
@@ -13,17 +12,17 @@ use std::io;
 
 #[allow(non_camel_case_types)]
 ///An empty implementation allows you to use the current log system as the main
-pub trait LogStatic<'a>: LogBase<'a> + LogLockIO<'a> + LogFlushIO {
+pub trait LogStatic<'a>: LogBase<'a> + LogLockIO<'a> + LogFlush {
 
 }
 
 #[allow(non_camel_case_types)]
 ///Empty implementation allows you to fully manipulate the current system of journals
-pub trait LogExtend<'a>: LogBase<'a> + LogLockIO<'a> + LogFlushIO + LogUnionConst<'a> /*+ LogEmptyConst*/ {
+pub trait LogExtend<'a>: LogBase<'a> + LogLockIO<'a> + LogFlush + LogUnionConst<'a> /*+ LogEmptyConst*/ {
 
 }
 
-
+///Generalization of the basic methods of information output
 pub trait LogBase<'a> {
 	fn warning<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
@@ -44,9 +43,9 @@ pub trait LogBase<'a> {
 
 
 
-///Flush of output streams
+///Generalization for cleaning output streams
 #[allow(non_camel_case_types)]
-pub trait LogFlushIO {
+pub trait LogFlush {
 	///Flush the output stream
 	fn flush_out(&mut self) -> io::Result<()>;
 
