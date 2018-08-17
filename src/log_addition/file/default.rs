@@ -1,7 +1,6 @@
 
 
-use log_panic::DefaultPanic;
-use log_write::DefNoColorWrite;
+use std::path::Path;
 use std::fs::File;
 use log_addition::union::LogUnionConst;
 use std::fmt::Arguments;
@@ -14,14 +13,14 @@ use log_write::LogWrite;
 use log_panic::LogPanic;
 use std::io;
 use log::lock::LogLockIO;
-use log::lock::default::LogLock;
-use log::lock::default_no_flush::LogLockNoFlush;
+use log::lock::default::LogSafeLock;
+use log::lock::default_nf::LogSafeLockNF;
 use log_addition::empty::LogEmptyConst;
 use log::LogStatic;
 use log::LogExtend;
 
 
-pub struct LogFile<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W> + Sized, WRITER: LogWrite, Panic: LogPanic> {
+pub struct LogFile<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPanic> {
      _a: PhantomData<&'a ()>,
      _w: PhantomData<W>,
      _o: PhantomData<OUT>,
@@ -31,7 +30,7 @@ pub struct LogFile<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W> + Sized, WRITER: 
      out: OUT,
 }
 
-impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W> + Sized, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, W, OUT, WRITER, Panic> {
+impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, W, OUT, WRITER, Panic> {
      #[inline]
      pub fn new(out: OUT) -> Self {
           LogFile {
@@ -48,8 +47,13 @@ impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W> + Sized, WRITER: LogWrite, Pani
 }
 
 /*
-impl<'a, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, File, LogLockRawIO<'a, File>, WRITER, Panic> {
-     
+impl<'a, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, LogSafeLock<'a, &'a File>, &'a File, WRITER, Panic> {
+	pub fn open<P: AsRef<Path>>(p: P) -> io::Result<Self> {
+		match File::open(p) {
+			Ok(a) => Ok( Self::new(a) ),
+			Err(e) => Err(e),
+		}
+	}
 }
 */
 
@@ -66,19 +70,19 @@ impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPa
 	
 impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPanic>  LogLockIO<'a> for LogFile<'a, W, OUT, WRITER, Panic> {
 	fn lock_out(&'a self) -> Box<'a + Write> {
-		LogLock::boxed(self.out.lock())
+		LogSafeLock::boxed(self.out.lock())
 	}
 	
 	fn lock_err(&'a self) -> Box<'a + Write> {
-		LogLock::empty_boxed()
+		LogSafeLock::empty_boxed()
 	}
 
 	fn no_flush_lock_out(&'a self) -> Box<'a + Write> {
-		LogLockNoFlush::boxed(self.out.lock())
+		LogSafeLockNF::boxed(self.out.lock())
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<'a + Write> {
-		LogLockNoFlush::empty_boxed()
+		LogSafeLockNF::empty_boxed()
 	}
 }
 

@@ -2,8 +2,7 @@
 use std::io::Write;
 
 pub mod default;
-pub mod default_no_flush;
-
+pub mod default_nf;
 
 
 ///Secure outflow blocking
@@ -21,3 +20,4 @@ pub trait LogLockIO<'a> {
 	///Flow blocking without self-cleaning
 	fn no_flush_lock_err(&'a self) -> Box<Write + 'a>;
 }
+

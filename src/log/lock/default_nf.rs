@@ -8,13 +8,17 @@ use std::io;
 
 ///Flow blocking without self-cleaning
 #[allow(non_camel_case_types)]
-pub struct LogLockNoFlush<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
+pub struct LogSafeLockNF<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a> LogLockNoFlush<'a, W> {
+impl<'a, W: Write + 'a> LogSafeLockNF<'a, W> {
 	#[inline]
 	pub fn new(out: W) -> Self {
-		LogLockNoFlush(out, PhantomData)
+		LogSafeLockNF(out, PhantomData)
 	}
+	/*#[inline]
+	pub fn boxed(out: W) -> Box<Write + 'a> {
+		Box::new(Self::new(out))
+	}*/
 	#[inline]
 	pub fn boxed(out: W) -> Box<Write + 'a> {
 		Box::new(Self::new(out))
@@ -22,21 +26,21 @@ impl<'a, W: Write + 'a> LogLockNoFlush<'a, W> {
 }
 
 
-impl<'a> LogEmptyConst for LogLockNoFlush<'a, EmptyWrite> {
+impl<'a> LogEmptyConst for LogSafeLockNF<'a, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
-		LogLockNoFlush::new(EmptyWrite)
+		LogSafeLockNF::new(EmptyWrite)
 	}
 }
 
-impl<'a, W: Write + 'a> Debug for LogLockNoFlush<'a, W> {
+impl<'a, W: Write + 'a> Debug for LogSafeLockNF<'a, W> {
 	#[inline]
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("LogLockNoFlush { .. }")
+		f.pad("LogSafeLockNF { .. }")
 	}
 }
 
-impl<'a, W: Write + 'a> Write for LogLockNoFlush<'a, W> {
+impl<'a, W: Write + 'a> Write for LogSafeLockNF<'a, W> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           self.0.write(buf)
@@ -46,4 +50,3 @@ impl<'a, W: Write + 'a> Write for LogLockNoFlush<'a, W> {
           self.0.flush()
      }
 }
-

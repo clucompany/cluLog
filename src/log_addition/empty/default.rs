@@ -13,8 +13,8 @@ use log::lock::LogLockIO;
 use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
-use log::lock::default::LogLock;
-use log::lock::default_no_flush::LogLockNoFlush;
+use log::lock::default::LogSafeLock;
+use log::lock::default_nf::LogSafeLockNF;
 use std::io::Write;
 
 
@@ -91,19 +91,19 @@ impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a
 
 impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
 	fn lock_out(&'a self) -> Box<Write + 'a> {
-		LogLock::boxed(self.0.lock())
+		LogSafeLock::boxed(self.0.lock())
 	}
 
 	fn lock_err(&'a self) -> Box<Write + 'a> {
-		LogLock::boxed(self.1.lock())
+		LogSafeLock::boxed(self.1.lock())
 	}
 
 	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
-		LogLockNoFlush::boxed(self.0.lock())
+		LogSafeLockNF::boxed(self.0.lock())
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
-		LogLockNoFlush::boxed(self.0.lock())
+		LogSafeLockNF::boxed(self.0.lock())
 	}
 }
 

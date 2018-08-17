@@ -6,13 +6,13 @@ use cluLog::log_addition::union::LogUnionConst;
 
 fn main() {
      {
-          let union = cluLog::log::default::Log::default(
+          let union = cluLog::log::default::LogDefault::default(
                
           ).default_union(
-               cluLog::log::default::Log::default()
+               cluLog::log::default::LogDefault::default()
 
           ).default_union(
-               cluLog::log::default::Log::default()
+               cluLog::log::default::LogDefault::default()
                
           ).to_box();
 

@@ -48,8 +48,8 @@ pub fn as_log<'a>() -> &'a LogStatic<'static> {
 #[macro_export]
 macro_rules! init_clulog {
 	() => {
-		use cluLog::log::default::Log;
-		cluLog::set_boxed_logger(Log::default_box());
+		use cluLog::log::default::LogDefault;
+		cluLog::set_boxed_logger(LogDefault::default_box());
 	};
 	(default) => {
 		init_cluLog!();
@@ -88,8 +88,8 @@ macro_rules! init_clulog {
 	};
 	
 	($write:tt, $panic:tt) => {
-		use cluLog::log::default::Log;
-		cluLog::set_boxed_logger(Log::default_box());
+		use cluLog::log::default::LogDefault;
+		cluLog::set_boxed_logger(LogDefault::default_box());
 	};
 }
 

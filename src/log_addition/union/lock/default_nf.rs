@@ -7,12 +7,12 @@ use std::io::Write;
 use std::io;
 
 #[allow(non_camel_case_types)]
-pub struct UnionLockNoFlush<'a, W: Write + 'a, W2: Write + 'a>(W,W2, PhantomData<&'a ()>);
+pub struct UnionNFLock<'a, W: Write + 'a, W2: Write + 'a>(W,W2, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a, W2: Write + 'a> UnionLockNoFlush<'a, W, W2> {
+impl<'a, W: Write + 'a, W2: Write + 'a> UnionNFLock<'a, W, W2> {
 	#[inline]
 	pub fn new(out: W, out2: W2) -> Self {
-		UnionLockNoFlush(out, out2, PhantomData)
+		UnionNFLock(out, out2, PhantomData)
 	}
      #[inline]
 	pub fn boxed(out: W, out2: W2) -> Box<Write + 'a> {
@@ -20,7 +20,7 @@ impl<'a, W: Write + 'a, W2: Write + 'a> UnionLockNoFlush<'a, W, W2> {
 	}
 }
 
-impl<'a> LogEmptyConst for UnionLockNoFlush<'a, EmptyWrite, EmptyWrite> {
+impl<'a> LogEmptyConst for UnionNFLock<'a, EmptyWrite, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
 		Self::new(EmptyWrite, EmptyWrite)
@@ -29,13 +29,13 @@ impl<'a> LogEmptyConst for UnionLockNoFlush<'a, EmptyWrite, EmptyWrite> {
 
 
 
-impl<'a, W: Write + 'a, W2: Write + 'a> Debug for UnionLockNoFlush<'a, W, W2> {
+impl<'a, W: Write + 'a, W2: Write + 'a> Debug for UnionNFLock<'a, W, W2> {
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("UnionLockNoFlush { .. }")
+		f.pad("UnionNFLock { .. }")
 	}
 }
 
-impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionLockNoFlush<'a, W, W2> {
+impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionNFLock<'a, W, W2> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           match self.0.write(buf) {

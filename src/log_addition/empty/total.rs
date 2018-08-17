@@ -9,8 +9,8 @@ use log::LogFlush;
 use std::io::Write;
 use std::fmt::Arguments;
 use std::io;
-use log::lock::default::LogLock;
-use log::lock::default_no_flush::LogLockNoFlush;
+use log::lock::default::LogSafeLock;
+use log::lock::default_nf::LogSafeLockNF;
 use log_addition::empty::LogEmptyConst;
 
 #[derive(Debug)]
@@ -79,19 +79,19 @@ impl LogFlush for LogTotalEmpty {
 
 impl<'a> LogLockIO<'a> for LogTotalEmpty {
 	fn lock_out(&'a self) -> Box<Write + 'a> {
-		LogLock::empty_boxed()
+		LogSafeLock::empty_boxed()
 	}
 
 	fn lock_err(&'a self) -> Box<Write + 'a> {
-		LogLock::empty_boxed()
+		LogSafeLock::empty_boxed()
 	}
 
 	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
-		LogLockNoFlush::empty_boxed()
+		LogSafeLockNF::empty_boxed()
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
-		LogLockNoFlush::empty_boxed()
+		LogSafeLockNF::empty_boxed()
 	}
 }
 

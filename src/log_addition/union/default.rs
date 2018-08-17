@@ -14,7 +14,7 @@ use log::LogFlush;
 use std::marker::PhantomData;
 use std::io;
 use log_addition::union::lock::default::UnionLock;
-use log_addition::union::lock::default_no_flush::UnionLockNoFlush;
+use log_addition::union::lock::default_nf::UnionNFLock;
 use log_addition::union::LogUnionConst;
 use log::LogExtend;
 
@@ -152,12 +152,12 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockI
 
      #[inline(always)]
 	fn no_flush_lock_out(&'a self) -> Box<'a + Write> {
-		UnionLockNoFlush::boxed(self.0.lock_out(), self.1.lock_out())
+		UnionNFLock::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 
      #[inline(always)]
 	fn no_flush_lock_err(&'a self) -> Box<'a + Write> {
-		UnionLockNoFlush::boxed(self.0.lock_err(), self.1.lock_err())
+		UnionNFLock::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 }
 

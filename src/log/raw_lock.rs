@@ -1,7 +1,9 @@
 
 
-use log::lock::default_no_flush::LogLockNoFlush;
-use log::lock::default::LogLock;
+use std::sync::Mutex;
+use std::sync::Arc;
+use log::lock::default_nf::LogSafeLockNF;
+use log::lock::default::LogSafeLock;
 use std::fs::File;
 use log_addition::empty::empty_write::EmptyWrite;
 use std::io::StderrLock;
@@ -12,7 +14,7 @@ use std::io::Stdout;
 
 //Raw internal locking method
 #[allow(non_camel_case_types)]
-pub trait LogLockRawIO<'a, W: Write + 'a = Self>: Write + Send + Sync {
+pub trait LogLockRawIO<'a, W: Write + Sized + 'a = Self>: Write + Send + Sync + Sized {
      ///Internal method
 	fn lock(&'a self) -> W;
 }
@@ -37,16 +39,19 @@ impl<'a> LogLockRawIO<'a> for EmptyWrite {
           self.clone()
      }
 }
-impl<'a> LogLockRawIO<'a, LogLock<'a, Self>> for &'a File {
+
+
+impl<'a> LogLockRawIO<'a, LogSafeLock<'a, Self>> for &'a File {
      #[inline(always)]
-     fn lock(&'a self) -> LogLock<'a, Self> {
-          LogLock::new(self)
+     fn lock(&'a self) -> LogSafeLock<'a, Self> {
+          LogSafeLock::new(self)
      }
 }
 
-impl<'a> LogLockRawIO<'a, LogLockNoFlush<'a, Self>> for &'a File {
+impl<'a> LogLockRawIO<'a, LogSafeLockNF<'a, Self>> for &'a File {
      #[inline(always)]
-     fn lock(&'a self) -> LogLockNoFlush<'a, Self> {
-          LogLockNoFlush::new(self)
+     fn lock(&'a self) -> LogSafeLockNF<'a, Self> {
+          LogSafeLockNF::new(self)
      }
 }
+

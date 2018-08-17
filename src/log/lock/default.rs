@@ -1,5 +1,4 @@
 
-
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use log_addition::empty::empty_write::EmptyWrite;
@@ -9,20 +8,21 @@ use std::io;
 
 ///Blocking threads with automatic cleaning
 #[allow(non_camel_case_types)]
-pub struct LogLock<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
+pub struct LogSafeLock<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a> LogLock<'a, W> {
+impl<'a, W: Write + 'a> LogSafeLock<'a, W> {
 	#[inline]
 	pub fn new(out: W) -> Self {
-		LogLock(out, PhantomData)
+		LogSafeLock(out, PhantomData)
 	}
 	#[inline]
-	pub fn boxed(out: W) -> Box<Write + 'a> {
+	pub fn boxed(out: W) -> Box<Write + 'a>{
 		Box::new(Self::new(out))
 	}
 }
 
-impl<'a> LogEmptyConst for LogLock<'a, EmptyWrite> {
+
+impl<'a> LogEmptyConst for LogSafeLock<'a, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
 		Self::new(EmptyWrite)
@@ -31,21 +31,21 @@ impl<'a> LogEmptyConst for LogLock<'a, EmptyWrite> {
 
 
 
-impl<'a, W: Write + 'a> Debug for LogLock<'a, W> {
+impl<'a, W: Write + 'a> Debug for LogSafeLock<'a, W> {
 	#[inline]
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("LogLock { .. }")
+		f.pad("LogSafeLock { .. }")
 	}
 }
 
-impl<'a, W: Write + 'a> Drop for LogLock<'a, W> {
+impl<'a, W: Write + 'a> Drop for LogSafeLock<'a, W> {
 	#[inline]
 	fn drop(&mut self) {
 		let _e = self.0.flush();
 	}
 }
 
-impl<'a, W: Write + 'a> Write for LogLock<'a, W> {
+impl<'a, W: Write + 'a> Write for LogSafeLock<'a, W> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           self.0.write(buf)
@@ -57,7 +57,8 @@ impl<'a, W: Write + 'a> Write for LogLock<'a, W> {
 }
 
 /*
-impl<'a, W: Write + 'a, W2: Write + 'a> Add<LogLock<'a, W>> for LogLock<'a, W> {
+impl<'a, W: Write + 'a, W2: Write + 'a> Add<LogSafeLock<'a, W>> for LogSafeLock<'a, W> {
 
 }
 */
+
