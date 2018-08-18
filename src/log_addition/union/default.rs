@@ -1,13 +1,12 @@
 
 //!Combining several log systems into one.
 
-use log::lock::LogLock;
+use log_lock::LogLock;
 use log::LogLockIO;
 use log::LogStatic;
 use log::LogBase;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
-use std::io::Write;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::total::LogTotalEmpty;
 use log::LogFlush;
@@ -15,8 +14,8 @@ use std::marker::PhantomData;
 use std::io;
 use log_addition::union::LogUnionConst;
 use log::LogExtend;
-use log::lock::union::UnionLock;
-use log::lock::union_nf::UnionNFLock;
+use log_lock::union::UnionLock;
+use log_lock::union_nf::UnionNFLock;
 
 pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 

@@ -2,9 +2,8 @@
 pub mod raw_lock;
 pub mod default;
 pub mod default_one;
-pub mod lock;
 
-use log::lock::LogLock;
+use log_lock::LogLock;
 use log_addition::union::LogUnionConst;
 use std::fmt::Arguments;
 use std::io;
@@ -72,10 +71,6 @@ pub trait LogFlush {
 		if let Err(e) = self.flush_out() {
 			return Err(e);
 		}
-		if let Err(e) = self.flush_err() {
-			return Err(e);
-		}
-
-		Ok( () )
+		self.flush_err()
 	}
 }

@@ -1,6 +1,6 @@
 
-use log::lock::LogLock;
-use std::io::Write;
+
+use log_lock::LogLock;
 
 pub mod empty_write;
 pub mod total;

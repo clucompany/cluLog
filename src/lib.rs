@@ -6,6 +6,7 @@ pub mod log;
 pub mod log_panic;
 pub mod log_write;
 pub mod log_addition;
+pub mod log_lock;
 mod macros;
 
 use log_addition::empty::total::LogTotalEmpty;

@@ -1,18 +1,19 @@
 
 
-use log::lock::LogLock;
+use log_lock::LogLock;
 use log::LogLockIO;
 use log::LogStatic;
 use log::LogExtend;
 use log::LogBase;
 use log_addition::union::LogUnionConst;
 use log::LogFlush;
-use std::io::Write;
 use std::fmt::Arguments;
 use std::io;
-use log::lock::default::LogSafeLock;
-use log::lock::default_nf::LogSafeLockNF;
 use log_addition::empty::LogEmptyConst;
+use log_lock::union::UnionLock;
+use log_lock::union_nf::UnionNFLock;
+use log_lock::default::LogSafeLock;
+use log_lock::default_nf::LogSafeLockNF;
 
 #[derive(Debug)]
 pub struct LogTotalEmpty;

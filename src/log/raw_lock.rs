@@ -1,9 +1,9 @@
 
 
+use log_lock::default_nf::LogSafeLockNF;
+use log_lock::default::LogSafeLock;
 use std::sync::MutexGuard;
 use std::sync::Mutex;
-use log::lock::default_nf::LogSafeLockNF;
-use log::lock::default::LogSafeLock;
 use std::fs::File;
 use log_addition::empty::empty_write::EmptyWrite;
 use std::io::StderrLock;
@@ -14,9 +14,15 @@ use std::io::Stdout;
 
 //Raw internal locking method
 #[allow(non_camel_case_types)]
-pub trait LogLockRawIO<'a, W: Write + Sized + 'a = Self>: Write {
+pub trait LogLockRawIO<'a, W: Write + 'a = Self> {
      ///Internal method
 	fn lock(&'a self) -> W;
+     
+     ///Alternate startup name
+     #[inline(always)]
+     fn _lock(&'a self) -> W {
+          self.lock()
+     }
 }
 
 impl<'a> LogLockRawIO<'a, StdoutLock<'a>> for Stdout {
@@ -55,3 +61,46 @@ impl<'a> LogLockRawIO<'a, LogSafeLockNF<'a, Self>> for &'a File {
      }
 }
 
+
+
+pub struct MutexWriter<'a, T: 'a + Write>(MutexGuard<'a, T>);
+impl<'a, T: 'a + Write> MutexWriter<'a, T> {
+     #[inline]
+     pub fn new(guard: MutexGuard<'a, T>) -> Self {
+          MutexWriter(guard)
+     }
+     pub fn lock(m: &'a Mutex<T>) -> Self {
+          let lock = match m.lock() {
+               Ok(a) => a,
+               Err(e) => e.into_inner(),
+          };
+          Self::new(lock)
+     }
+}
+
+impl<'a, T: 'a + Write> Write for MutexWriter<'a, T> {
+     #[inline(always)]
+     fn write(&mut self, buf: &[u8]) -> ::std::io::Result<usize> {
+          self.0.write(buf)
+     }
+
+     #[inline(always)]
+     fn flush(&mut self) -> ::std::io::Result<()> {
+          self.0.flush()
+     }
+}
+
+
+impl<'a> LogLockRawIO<'a, LogSafeLock<'a, MutexWriter<'a, File>>> for Mutex<File> {
+     #[inline]
+     fn lock(&'a self) -> LogSafeLock<'a, MutexWriter<'a, File>> {
+          LogSafeLock::new(MutexWriter::lock(self))
+     }
+}
+
+impl<'a> LogLockRawIO<'a, LogSafeLockNF<'a, MutexWriter<'a, File>>> for Mutex<File> {
+     #[inline]
+     fn lock(&'a self) -> LogSafeLockNF<'a, MutexWriter<'a, File>> {
+          LogSafeLockNF::new(MutexWriter::lock(self))
+     }
+}

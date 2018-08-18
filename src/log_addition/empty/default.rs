@@ -1,5 +1,5 @@
 
-use log::lock::LogLock;
+use log_lock::LogLock;
 use log::LogLockIO;
 use std::io::Stderr;
 use std::io::Stdout;
@@ -14,9 +14,9 @@ use log_addition::union::LogUnionConst;
 use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
-use log::lock::default::LogSafeLock;
-use log::lock::default_nf::LogSafeLockNF;
 use std::io::Write;
+use log_lock::default::LogSafeLock;
+use log_lock::default_nf::LogSafeLockNF;
 
 
 #[derive(Debug)]

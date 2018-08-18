@@ -1,6 +1,6 @@
 
-use log::lock::LogLock;
-use log::lock::LogLockUnionConst;
+use log_lock::LogLockUnionConst;
+use log_lock::LogLock;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::empty_write::EmptyWrite;
 use std::marker::PhantomData;
