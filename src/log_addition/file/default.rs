@@ -1,5 +1,7 @@
 
 
+use std::sync::Mutex;
+use std::sync::Arc;
 use std::path::Path;
 use std::fs::File;
 use log_addition::union::LogUnionConst;
@@ -20,23 +22,19 @@ use log::LogStatic;
 use log::LogExtend;
 
 
-pub struct LogFile<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPanic> {
+pub struct LogFile<'a, WRITER: LogWrite, Panic: LogPanic> {
      _a: PhantomData<&'a ()>,
-     _w: PhantomData<W>,
-     _o: PhantomData<OUT>,
      _w2: PhantomData<WRITER>,
      _p: PhantomData<Panic>,
 
-     out: OUT,
+     out: Arc<Mutex<File>>,
 }
 
-impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, W, OUT, WRITER, Panic> {
+impl<'a, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, WRITER, Panic> {
      #[inline]
-     pub fn new(out: OUT) -> Self {
+     pub fn new(out: Arc<Mutex<File>>) -> Self {
           LogFile {
                _a: PhantomData,
-               _w: PhantomData,
-               _o: PhantomData,
                _w2: PhantomData,
                _p: PhantomData,
 
@@ -44,18 +42,13 @@ impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPa
           }
      }
      
-}
-
-/*
-impl<'a, WRITER: LogWrite, Panic: LogPanic> LogFile<'a, LogSafeLock<'a, &'a File>, &'a File, WRITER, Panic> {
-	pub fn open<P: AsRef<Path>>(p: P) -> io::Result<Self> {
-		match File::open(p) {
-			Ok(a) => Ok( Self::new(a) ),
-			Err(e) => Err(e),
+	pub fn open<P: AsRef<Path>>(path: P) -> io::Result<Self> {
+		match File::open(path) {
+			Ok(a) => Ok( Self::new(Arc::new(Mutex::new(a)))),
+			Err(e) => Err( e ),
 		}
 	}
 }
-*/
 
 impl<'a, W: 'a + Write, OUT: LogLockRawIO<'a, W>, WRITER: LogWrite, Panic: LogPanic> LogFlush for LogFile<'a, W, OUT, WRITER, Panic> {
 	fn flush_out(&mut self) -> io::Result<()> {

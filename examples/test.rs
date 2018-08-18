@@ -2,35 +2,17 @@
 #[macro_use]
 extern crate cluLog;
 
+use cluLog::log_addition::union::LogUnionConst;
+use cluLog::log::default::LogDefault;
+use cluLog::log_addition::empty::default::LogEmpty;
+use std::fs::File;
 
 fn main() {
-	/*let mut num = 1;
-	for a in 0..400 {
-		::std::thread::spawn(move || {
-			loop {
-				//init_cluLog!();
-				//init_cluLog!(null);
-				init_cluLog!();
-				init_cluLog!(null);
-				init_cluLog!(none);
-				init_cluLog!();
-				
-				
-				unk!("aa", "AAA {} {}", 23243, num);
-				
-				::std::thread::sleep_ms(num);
-			}
-		});
-		num += 1;
-		
-		if num >= 15 {
-			num = 1;
-		}
-	}*/
-	init_clulog!(none);
-	
-	unk!("aa", "AAA {} {}", 23243, 21);
-	println!("12");
-	//::std::thread::park();
+	//init_clulog!(one, File::open("./out").unwrap());
+	//Implementing LogDefault with one output stream.
+
+	println!("Test out thread");
+	eprintln!("Test out thread");
+
 }
 

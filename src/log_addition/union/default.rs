@@ -1,22 +1,22 @@
 
 //!Combining several log systems into one.
 
-
+use log::lock::LogLock;
+use log::LogLockIO;
 use log::LogStatic;
 use log::LogBase;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
-use log::lock::LogLockIO;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::total::LogTotalEmpty;
 use log::LogFlush;
 use std::marker::PhantomData;
 use std::io;
-use log_addition::union::lock::default::UnionLock;
-use log_addition::union::lock::default_nf::UnionNFLock;
 use log_addition::union::LogUnionConst;
 use log::LogExtend;
+use log::lock::union::UnionLock;
+use log::lock::union_nf::UnionNFLock;
 
 pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 
@@ -53,11 +53,7 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush
           if let Err(e) = self.0.flush_out() {
                return Err(e);
           }
-          if let Err(e) = self.1.flush_out() {
-               return Err(e);
-          }
-
-          Ok( () )
+          self.1.flush_out()
      }
 
      #[inline(always)]
@@ -65,11 +61,7 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush
           if let Err(e) = self.0.flush_err() {
                return Err(e);
           }
-          if let Err(e) = self.1.flush_err() {
-               return Err(e);
-          }
-
-          Ok( () )
+          self.1.flush_err()
      }
 }
 
@@ -141,22 +133,22 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogBase<
 	
 impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-	fn lock_out(&'a self) -> Box<'a + Write> {
+	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
 		UnionLock::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 	
      #[inline(always)]
-	fn lock_err(&'a self) -> Box<'a + Write> {
+	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
 		UnionLock::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 
      #[inline(always)]
-	fn no_flush_lock_out(&'a self) -> Box<'a + Write> {
+	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
 		UnionNFLock::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 
      #[inline(always)]
-	fn no_flush_lock_err(&'a self) -> Box<'a + Write> {
+	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
 		UnionNFLock::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 }

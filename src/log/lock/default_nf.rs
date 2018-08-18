@@ -1,4 +1,6 @@
 
+use log::lock::LogLock;
+use log::lock::LogLockUnionConst;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::empty_write::EmptyWrite;
 use std::marker::PhantomData;
@@ -15,12 +17,9 @@ impl<'a, W: Write + 'a> LogSafeLockNF<'a, W> {
 	pub fn new(out: W) -> Self {
 		LogSafeLockNF(out, PhantomData)
 	}
-	/*#[inline]
-	pub fn boxed(out: W) -> Box<Write + 'a> {
-		Box::new(Self::new(out))
-	}*/
+	
 	#[inline]
-	pub fn boxed(out: W) -> Box<Write + 'a> {
+	pub fn boxed(out: W) -> Box<LogLock<'a> + 'a> {
 		Box::new(Self::new(out))
 	}
 }
@@ -50,3 +49,7 @@ impl<'a, W: Write + 'a> Write for LogSafeLockNF<'a, W> {
           self.0.flush()
      }
 }
+
+
+impl<'a, W: Write + 'a> LogLock<'a> for LogSafeLockNF<'a, W> {}
+impl<'a, W: Write + 'a> LogLockUnionConst<'a> for LogSafeLockNF<'a, W> {}

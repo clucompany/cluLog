@@ -1,7 +1,7 @@
 
 
+use std::sync::MutexGuard;
 use std::sync::Mutex;
-use std::sync::Arc;
 use log::lock::default_nf::LogSafeLockNF;
 use log::lock::default::LogSafeLock;
 use std::fs::File;
@@ -14,7 +14,7 @@ use std::io::Stdout;
 
 //Raw internal locking method
 #[allow(non_camel_case_types)]
-pub trait LogLockRawIO<'a, W: Write + Sized + 'a = Self>: Write + Send + Sync + Sized {
+pub trait LogLockRawIO<'a, W: Write + Sized + 'a = Self>: Write {
      ///Internal method
 	fn lock(&'a self) -> W;
 }

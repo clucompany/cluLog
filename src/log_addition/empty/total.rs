@@ -1,10 +1,11 @@
 
 
+use log::lock::LogLock;
+use log::LogLockIO;
 use log::LogStatic;
 use log::LogExtend;
 use log::LogBase;
 use log_addition::union::LogUnionConst;
-use log::lock::LogLockIO;
 use log::LogFlush;
 use std::io::Write;
 use std::fmt::Arguments;
@@ -17,6 +18,7 @@ use log_addition::empty::LogEmptyConst;
 pub struct LogTotalEmpty;
 
 impl LogTotalEmpty {
+	#[inline]
 	pub fn new() -> Self {
 		LogTotalEmpty
 	}
@@ -78,19 +80,19 @@ impl LogFlush for LogTotalEmpty {
 }
 
 impl<'a> LogLockIO<'a> for LogTotalEmpty {
-	fn lock_out(&'a self) -> Box<Write + 'a> {
+	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLock::empty_boxed()
 	}
 
-	fn lock_err(&'a self) -> Box<Write + 'a> {
+	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLock::empty_boxed()
 	}
 
-	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLockNF::empty_boxed()
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLockNF::empty_boxed()
 	}
 }

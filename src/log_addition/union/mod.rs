@@ -7,7 +7,7 @@ use log_panic::LogPanic;
 use log_addition::union::default::LogUnion;
 
 pub mod default;
-pub mod lock;
+//pub mod lock;
 
 ///The constructor of empty structures
 pub trait LogUnionConst<'a>  {

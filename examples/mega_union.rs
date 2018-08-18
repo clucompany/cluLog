@@ -22,4 +22,7 @@ fn main() {
 
      trace!("This record is output in several logs of systems. 1");
      trace!("This record is output in several logs of systems. 2");
+
+     let mut lock = lock_out!();
+     write!(lock, "OK\n");
 }

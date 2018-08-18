@@ -1,4 +1,5 @@
 
+use log::lock::LogLock;
 use std::io::Write;
 
 pub mod empty_write;
@@ -12,7 +13,7 @@ pub trait LogEmptyConst {
      fn empty() -> Self;
 
      #[inline]
-     fn empty_boxed<'a>() -> Box<Write + 'a> where Self: Sized + 'a + Write {
+     fn empty_boxed<'a>() -> Box<LogLock<'a> + 'a> where Self: Sized + 'a + LogLock<'a> {
 		Box::new(Self::empty())
 	}
 }

@@ -1,4 +1,6 @@
 
+use log::lock::LogLock;
+use log::lock::LogLockUnionConst;
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use log_addition::empty::empty_write::EmptyWrite;
@@ -15,7 +17,7 @@ impl<'a, W: Write + 'a, W2: Write + 'a> UnionNFLock<'a, W, W2> {
 		UnionNFLock(out, out2, PhantomData)
 	}
      #[inline]
-	pub fn boxed(out: W, out2: W2) -> Box<Write + 'a> {
+	pub fn boxed(out: W, out2: W2) -> Box<LogLock<'a> + 'a> {
 		Box::new(Self::new(out, out2))
 	}
 }
@@ -41,7 +43,13 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionNFLock<'a, W, W2> {
           match self.0.write(buf) {
                Ok(s) => {
                     match self.1.write(buf) {
-                         Ok(s2) => return Ok(s+s2),
+                         Ok(s2) => return Ok({
+                              if s2 >= s {
+                                   s
+                              }else {
+                                   s2
+                              }
+                         }),
                          a => return a,
                     }
                },
@@ -53,9 +61,8 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionNFLock<'a, W, W2> {
           if let Err(e) = self.0.flush() {
                return Err(e);
           }
-          if let Err(e) = self.1.flush() {
-               return Err(e);
-          }
-          Ok( () )
+          self.1.flush()
      }
 }
+impl<'a, W: Write + 'a, W2: Write + 'a> LogLock<'a> for UnionNFLock<'a, W, W2> {}
+impl<'a, W: Write + 'a, W2: Write + 'a> LogLockUnionConst<'a> for UnionNFLock<'a, W, W2> {}

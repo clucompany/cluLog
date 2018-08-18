@@ -1,4 +1,6 @@
 
+use log::lock::LogLock;
+use log::LogLockIO;
 use std::io::Stderr;
 use std::io::Stdout;
 use std::marker::PhantomData;
@@ -9,7 +11,6 @@ use log::LogExtend;
 use log::LogStatic;
 use log::LogBase;
 use log_addition::union::LogUnionConst;
-use log::lock::LogLockIO;
 use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
@@ -90,19 +91,19 @@ impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a
 
 
 impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
-	fn lock_out(&'a self) -> Box<Write + 'a> {
+	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLock::boxed(self.0.lock())
 	}
 
-	fn lock_err(&'a self) -> Box<Write + 'a> {
+	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLock::boxed(self.1.lock())
 	}
 
-	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLockNF::boxed(self.0.lock())
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
 		LogSafeLockNF::boxed(self.0.lock())
 	}
 }

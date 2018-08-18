@@ -47,14 +47,6 @@ pub fn as_log<'a>() -> &'a LogStatic<'static> {
 
 #[macro_export]
 macro_rules! init_clulog {
-	() => {
-		use cluLog::log::default::LogDefault;
-		cluLog::set_boxed_logger(LogDefault::default_box());
-	};
-	(default) => {
-		init_cluLog!();
-	};
-	
 	(null) => {
 		use cluLog::log_addition::empty::total::LogTotalEmpty;
 
@@ -70,14 +62,24 @@ macro_rules! init_clulog {
 
 		cluLog::set_logger(&LogTotalEmpty);
 	};
+
+	(one) => {
+		use cluLog::log::default_one::LogOneDefault;
+		cluLog::set_boxed_logger(Box::new(LogOneDefault::default()));
+	};
+	(one, $e:expr) => {
+		use cluLog::log::default_one::LogOneDefault;
+		cluLog::set_boxed_logger(Box::new(LogOneDefault::new($e)));
+	};
+
 	(union, $panic:tt, $a:expr, $b:expr) => {
 		cluLog::set_boxed_logger(Box::new($a.union::<$panic, _>($b)));
 	};
 	(union, $a:expr, $b:expr) => {
-		cluLog::set_boxed_logger(Box::new($a.union::<DefLogPanic, _>($b)));
+		cluLog::set_boxed_logger(Box::new($a.default_union($b)));
 	};
 	
-	(panic, $panic:tt) => {
+	/*(panic, $panic:tt) => {
 		use cluLog::DefLogWrite;
 		cluLog::set_logger(&cluLog::init_std::<DefLogWrite, $panic>())
 	};
@@ -89,7 +91,21 @@ macro_rules! init_clulog {
 	
 	($write:tt, $panic:tt) => {
 		use cluLog::log::default::LogDefault;
-		cluLog::set_boxed_logger(LogDefault::default_box());
+		cluLog::set_boxed_logger(LogDefault::<$write, $panic>::default_box());
+	};*/
+
+
+	() => {
+		use cluLog::log::default::LogDefault;
+		cluLog::set_boxed_logger(Box::new(LogDefault::default()));
+	};
+	($e: expr) => {
+		use cluLog::log::default_one::LogOneDefault;
+		cluLog::set_boxed_logger(LogOneDefault::new($e));
+	};
+	($e: expr, $e2: expr) => {
+		use cluLog::log::default::LogDefault;
+		cluLog::set_boxed_logger(LogDefault::new($e, $e2));
 	};
 }
 

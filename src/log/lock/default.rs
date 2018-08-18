@@ -1,4 +1,6 @@
 
+use log::lock::LogLock;
+use log::lock::LogLockUnionConst;
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use log_addition::empty::empty_write::EmptyWrite;
@@ -15,8 +17,14 @@ impl<'a, W: Write + 'a> LogSafeLock<'a, W> {
 	pub fn new(out: W) -> Self {
 		LogSafeLock(out, PhantomData)
 	}
+
 	#[inline]
-	pub fn boxed(out: W) -> Box<Write + 'a>{
+	pub fn impled(out: W) -> impl LogLock<'a> + 'a {
+		Self::new(out)
+	}
+
+	#[inline]
+	pub fn boxed(out: W) -> Box<LogLock<'a> + 'a>{
 		Box::new(Self::new(out))
 	}
 }
@@ -56,9 +64,6 @@ impl<'a, W: Write + 'a> Write for LogSafeLock<'a, W> {
      }
 }
 
-/*
-impl<'a, W: Write + 'a, W2: Write + 'a> Add<LogSafeLock<'a, W>> for LogSafeLock<'a, W> {
 
-}
-*/
-
+impl<'a, W: Write + 'a> LogLock<'a> for LogSafeLock<'a, W> {}
+impl<'a, W: Write + 'a> LogLockUnionConst<'a> for LogSafeLock<'a, W> {}

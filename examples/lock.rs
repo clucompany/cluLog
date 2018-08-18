@@ -10,6 +10,7 @@ fn main() {
      {
           let mut lock = lock_out!();
 
+
           for _a in 0..10 {
                let _e = lock.write(b"Test");
           }
