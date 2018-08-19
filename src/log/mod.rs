@@ -1,7 +1,6 @@
 
 pub mod default;
 pub mod default_one;
-pub mod mutex;
 
 use log_lock::LogSafeLock;
 use log_addition::union::LogUnionConst;

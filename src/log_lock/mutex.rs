@@ -2,9 +2,7 @@
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 use log_lock::LogSafeLock;
-use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
-use log_addition::empty::empty_write::EmptyWrite;
 use std::io::Write;
 use std::io;
 

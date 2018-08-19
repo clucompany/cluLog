@@ -17,7 +17,7 @@ impl<'a, W: Write + 'a> LogSafeMutexLockNF<'a, W> {
 	}
 
      pub fn mutex(mutex: &'a Mutex<W>) -> Self {
-          let mut lock = match mutex.lock() {
+          let lock = match mutex.lock() {
                Ok(a) => a,
                Err(e) => e.into_inner(),
           };

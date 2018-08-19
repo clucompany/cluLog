@@ -10,8 +10,6 @@ use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
 use log_addition::empty::LogEmptyConst;
-use log_lock::union::UnionLock;
-use log_lock::union_nf::UnionNFLock;
 use log_lock::default::LogSafeWriteLock;
 use log_lock::default_nf::LogSafeWriteNFLock;
 
