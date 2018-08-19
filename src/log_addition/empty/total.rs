@@ -1,6 +1,6 @@
 
 
-use log_lock::LogLock;
+use log_lock::LogSafeLock;
 use log::LogLockIO;
 use log::LogStatic;
 use log::LogExtend;
@@ -12,8 +12,8 @@ use std::io;
 use log_addition::empty::LogEmptyConst;
 use log_lock::union::UnionLock;
 use log_lock::union_nf::UnionNFLock;
-use log_lock::default::LogSafeLock;
-use log_lock::default_nf::LogSafeLockNF;
+use log_lock::default::LogSafeWriteLock;
+use log_lock::default_nf::LogSafeWriteNFLock;
 
 #[derive(Debug)]
 pub struct LogTotalEmpty;
@@ -81,20 +81,20 @@ impl LogFlush for LogTotalEmpty {
 }
 
 impl<'a> LogLockIO<'a> for LogTotalEmpty {
-	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLock::empty_boxed()
+	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteLock::empty_boxed()
 	}
 
-	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLock::empty_boxed()
+	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteLock::empty_boxed()
 	}
 
-	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLockNF::empty_boxed()
+	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteNFLock::empty_boxed()
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLockNF::empty_boxed()
+	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteNFLock::empty_boxed()
 	}
 }
 

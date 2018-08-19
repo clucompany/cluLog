@@ -1,14 +1,14 @@
 
+use log_shape::LogShape;
 use std::fmt::Arguments;
 use std::io::Write;
-use log_write::LogWrite;
 use std::io;
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone)]
-pub enum cluLogWrite {}
+pub enum cluLogShape {}
 
-impl LogWrite for cluLogWrite {	
+impl LogShape for cluLogShape {	
 	
 	#[inline(always)]
 	fn warning<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {

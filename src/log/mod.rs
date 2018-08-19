@@ -1,9 +1,9 @@
 
-pub mod raw_lock;
 pub mod default;
 pub mod default_one;
+pub mod mutex;
 
-use log_lock::LogLock;
+use log_lock::LogSafeLock;
 use log_addition::union::LogUnionConst;
 use std::fmt::Arguments;
 use std::io;
@@ -44,16 +44,16 @@ pub trait LogBase<'a> {
 #[allow(non_camel_case_types)]
 pub trait LogLockIO<'a> {
 	///Blocking threads with automatic cleaning
-	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a>;
+	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a>;
 
 	///Blocking threads with automatic cleaning
-	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a>;
+	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a>;
 
 	///Flow blocking without self-cleaning
-	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a>;
+	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a>;
 
 	///Flow blocking without self-cleaning
-	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a>;
+	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a>;
 }
 
 ///Generalization for cleaning output streams

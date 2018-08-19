@@ -4,9 +4,10 @@ extern crate clucolor;
 
 pub mod log;
 pub mod log_panic;
-pub mod log_write;
+pub mod log_shape;
 pub mod log_addition;
 pub mod log_lock;
+pub mod log_write;
 mod macros;
 
 use log_addition::empty::total::LogTotalEmpty;
@@ -14,7 +15,7 @@ use log::LogStatic;
 use std::sync::{Once, ONCE_INIT};
 
 
-pub type DefLogWrite = 			self::log_write::			DefLogWrite;
+pub type DefLogShape = 			self::log_shape::			DefLogShape;
 pub type DefLogPanic = 			self::log_panic::			DefaultPanic;
 
 

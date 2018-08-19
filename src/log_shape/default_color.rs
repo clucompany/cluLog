@@ -1,7 +1,7 @@
 
+use log_shape::LogShape;
 use std::io::Write;
 use std::fmt::Arguments;
-use log_write::LogWrite;
 use ::std::io;
 
 use clucolor::colors::*;
@@ -21,9 +21,9 @@ pub type EPrintColor = 	BrightWhite;
 
 #[allow(non_camel_case_types)]
 #[derive(Debug)]
-pub enum cluLogColorWrite {}
+pub enum cluLogColorShape {}
 
-impl LogWrite for cluLogColorWrite {	
+impl LogShape for cluLogColorShape {	
 	
 	#[inline(always)]
 	fn warning<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {

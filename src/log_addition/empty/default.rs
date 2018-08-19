@@ -1,12 +1,12 @@
 
-use log_lock::LogLock;
+use log_write::LogWrite;
+use log_lock::LogSafeLock;
 use log::LogLockIO;
 use std::io::Stderr;
 use std::io::Stdout;
 use std::marker::PhantomData;
 use std::io::StderrLock;
 use std::io::StdoutLock;
-use log::raw_lock::LogLockRawIO;
 use log::LogExtend;
 use log::LogStatic;
 use log::LogBase;
@@ -15,14 +15,14 @@ use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
 use std::io::Write;
-use log_lock::default::LogSafeLock;
-use log_lock::default_nf::LogSafeLockNF;
+use log_lock::default_nf::LogSafeWriteNFLock;
+use log_lock::default::LogSafeWriteLock;
 
 
 #[derive(Debug)]
-pub struct LogEmpty<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>>(W, W2, PhantomData<&'a ()>);
+pub struct LogEmpty<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>>(W, W2, PhantomData<&'a ()>);
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogEmpty<'a, W, W2> {
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogEmpty<'a, W, W2> {
 	#[inline]
 	pub fn new(w: W, w2: W2) -> Self {
 		LogEmpty(w, w2, PhantomData)
@@ -37,7 +37,7 @@ impl<'a> Default for LogEmpty<'a, Stdout, Stderr> {
 }
 
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogBase<'a> for LogEmpty<'a, W, W2> {
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogBase<'a> for LogEmpty<'a, W, W2> {
 	#[inline(always)]
 	fn warning<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
@@ -77,7 +77,7 @@ impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a
 	}
 }
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogFlush for LogEmpty<'a, W, W2> {
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogFlush for LogEmpty<'a, W, W2> {
 	#[inline(always)]	
 	fn flush_out(&mut self) -> io::Result<()> {
 		Ok( () )
@@ -90,24 +90,24 @@ impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a
 }
 
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
-	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLock::boxed(self.0.lock())
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
+	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteLock::boxed(self.0.lock())
 	}
 
-	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLock::boxed(self.1.lock())
+	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteLock::boxed(self.1.lock())
 	}
 
-	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLockNF::boxed(self.0.lock())
+	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteNFLock::boxed(self.0.lock())
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
-		LogSafeLockNF::boxed(self.0.lock())
+	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
+		LogSafeWriteNFLock::boxed(self.0.lock())
 	}
 }
 
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogUnionConst<'a> for LogEmpty<'a, W, W2> {}
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogStatic<'a> for LogEmpty<'a, W, W2> {}
-impl<'a, W: LogLockRawIO<'a, StdoutLock<'a>>, W2: LogLockRawIO<'a, StderrLock<'a>>> LogExtend<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogUnionConst<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogStatic<'a> for LogEmpty<'a, W, W2> {}
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogExtend<'a> for LogEmpty<'a, W, W2> {}

@@ -1,6 +1,6 @@
 
 
-use log_lock::LogLock;
+use log_lock::LogSafeLock;
 
 pub mod empty_write;
 pub mod total;
@@ -13,7 +13,7 @@ pub trait LogEmptyConst {
      fn empty() -> Self;
 
      #[inline]
-     fn empty_boxed<'a>() -> Box<LogLock<'a> + 'a> where Self: Sized + 'a + LogLock<'a> {
+     fn empty_boxed<'a>() -> Box<LogSafeLock<'a> + 'a> where Self: Sized + 'a + LogSafeLock<'a> {
 		Box::new(Self::empty())
 	}
 }

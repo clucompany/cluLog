@@ -7,16 +7,14 @@ pub mod default;
 pub mod default_nf;
 pub mod union;
 pub mod union_nf;
-
-pub trait LogLock<'a>: LogLockUnionConst<'a> + Write + 'a {
-
-}
+pub mod mutex;
+pub mod mutex_nf;
 
 
 ///The constructor of empty structures
-pub trait LogLockUnionConst<'a>: Write {
+pub trait LogSafeLock<'a>: Write + 'a {
      #[inline]
-     fn union<B: LogLockUnionConst<'a> + Sized + 'a>(self, b: B) -> UnionNFLock<'a, Self, B> where Self: Sized { 
+     fn union<B: LogSafeLock<'a> + Sized + 'a>(self, b: B) -> UnionNFLock<'a, Self, B> where Self: Sized { 
           UnionNFLock::new(self, b)
      }
 

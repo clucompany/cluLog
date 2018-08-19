@@ -1,7 +1,7 @@
 
 //!Combining several log systems into one.
 
-use log_lock::LogLock;
+use log_lock::LogSafeLock;
 use log::LogLockIO;
 use log::LogStatic;
 use log::LogBase;
@@ -132,22 +132,22 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogBase<
 	
 impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-	fn lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
+	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
 		UnionLock::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 	
      #[inline(always)]
-	fn lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
+	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
 		UnionLock::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 
      #[inline(always)]
-	fn no_flush_lock_out(&'a self) -> Box<LogLock<'a> + 'a> {
+	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
 		UnionNFLock::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 
      #[inline(always)]
-	fn no_flush_lock_err(&'a self) -> Box<LogLock<'a> + 'a> {
+	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
 		UnionNFLock::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 }

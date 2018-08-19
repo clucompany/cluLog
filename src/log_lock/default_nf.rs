@@ -1,6 +1,5 @@
 
-use log_lock::LogLockUnionConst;
-use log_lock::LogLock;
+use log_lock::LogSafeLock;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::empty_write::EmptyWrite;
 use std::marker::PhantomData;
@@ -10,36 +9,36 @@ use std::io;
 
 ///Flow blocking without self-cleaning
 #[allow(non_camel_case_types)]
-pub struct LogSafeLockNF<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
+pub struct LogSafeWriteNFLock<'a, W: Write + 'a>(W, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a> LogSafeLockNF<'a, W> {
+impl<'a, W: Write + 'a> LogSafeWriteNFLock<'a, W> {
 	#[inline]
 	pub fn new(out: W) -> Self {
-		LogSafeLockNF(out, PhantomData)
+		LogSafeWriteNFLock(out, PhantomData)
 	}
 	
 	#[inline]
-	pub fn boxed(out: W) -> Box<LogLock<'a> + 'a> {
+	pub fn boxed(out: W) -> Box<LogSafeLock<'a> + 'a> {
 		Box::new(Self::new(out))
 	}
 }
 
 
-impl<'a> LogEmptyConst for LogSafeLockNF<'a, EmptyWrite> {
+impl<'a> LogEmptyConst for LogSafeWriteNFLock<'a, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
-		LogSafeLockNF::new(EmptyWrite)
+		LogSafeWriteNFLock::new(EmptyWrite)
 	}
 }
 
-impl<'a, W: Write + 'a> Debug for LogSafeLockNF<'a, W> {
+impl<'a, W: Write + 'a> Debug for LogSafeWriteNFLock<'a, W> {
 	#[inline]
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("LogSafeLockNF { .. }")
+		f.pad("LogSafeWriteNFLock { .. }")
 	}
 }
 
-impl<'a, W: Write + 'a> Write for LogSafeLockNF<'a, W> {
+impl<'a, W: Write + 'a> Write for LogSafeWriteNFLock<'a, W> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           self.0.write(buf)
@@ -51,5 +50,4 @@ impl<'a, W: Write + 'a> Write for LogSafeLockNF<'a, W> {
 }
 
 
-impl<'a, W: Write + 'a> LogLock<'a> for LogSafeLockNF<'a, W> {}
-impl<'a, W: Write + 'a> LogLockUnionConst<'a> for LogSafeLockNF<'a, W> {}
+impl<'a, W: Write + 'a> LogSafeLock<'a> for LogSafeWriteNFLock<'a, W> {}
