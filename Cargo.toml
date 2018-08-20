@@ -6,7 +6,6 @@ authors = ["Денис Котляров <denis2005991@gmail.com>"]
 [lib]
 name = "cluLog"
 path = "src/lib.rs"
-crate-type = ["dylib", "rlib"]
 
 [dependencies]
 cluColor = "0.1.4"

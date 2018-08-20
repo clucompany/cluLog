@@ -79,12 +79,12 @@ impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogB
 
 impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogFlush for LogEmpty<'a, W, W2> {
 	#[inline(always)]	
-	fn flush_out(&mut self) -> io::Result<()> {
+	fn flush_out(&self) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn flush_err(&mut self) -> io::Result<()> {
+	fn flush_err(&self) -> io::Result<()> {
 		Ok( () )
 	}
 }

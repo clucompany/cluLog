@@ -49,11 +49,19 @@ impl<'a, T: 'a + Write> LogWrite<'a, LogSafeMutexLock<'a, T>> for MutexWrite<'a,
      fn lock(&'a self) -> LogSafeMutexLock<'a, T> {
           LogSafeMutexLock::new(self._lock())
      }
+     #[inline(always)]
+     fn un_flush(&self) -> io::Result<()> {
+          self._lock().flush()
+     }
 }
 
 impl<'a, T: 'a + Write> LogWrite<'a, LogSafeMutexLockNF<'a, T>> for MutexWrite<'a, T> {
      #[inline]
      fn lock(&'a self) -> LogSafeMutexLockNF<'a, T> {
           LogSafeMutexLockNF::new(self._lock())
+     }
+     #[inline(always)]
+     fn un_flush(&self) -> io::Result<()> {
+          self._lock().flush()
      }
 }

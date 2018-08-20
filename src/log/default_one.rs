@@ -104,15 +104,15 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Writ
 }
 
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Write> LogFlush for LogOneDefault<'a, W, P, O, OL> {
-	fn flush_out(&mut self) -> io::Result<()> {
-		self.out.flush()
+	fn flush_out(&self) -> io::Result<()> {
+		self.out.un_flush()
 	}
 	
-	fn flush_err(&mut self) -> io::Result<()> {
-		self.out.flush()
+	fn flush_err(&self) -> io::Result<()> {
+		self.out.un_flush()
 	}
 	#[inline]
-	fn flush(&mut self) -> io::Result<()> {
+	fn flush(&self) -> io::Result<()> {
 		self.flush_out()
 	}
 }

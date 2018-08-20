@@ -8,6 +8,5 @@ fn main() {
 
 	println!("Test out thread");
 	eprintln!("Test out thread");
-	
 }
 

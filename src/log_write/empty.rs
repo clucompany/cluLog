@@ -1,11 +1,17 @@
 
 use log_write::LogWrite;
 use log_addition::empty::empty_write::EmptyWrite;
+use std::io;
 
 impl<'a> LogWrite<'a, EmptyWrite> for EmptyWrite {
      #[inline(always)]
      fn lock(&'a self) -> EmptyWrite {
           self.clone()
+     }
+
+     #[inline(always)]
+     fn un_flush(&self) -> io::Result<()> {
+          Ok( () )
      }
 }
 /*

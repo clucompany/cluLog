@@ -59,14 +59,14 @@ pub trait LogLockIO<'a> {
 #[allow(non_camel_case_types)]
 pub trait LogFlush {
 	///Flush the output stream
-	fn flush_out(&mut self) -> io::Result<()>;
+	fn flush_out(&self) -> io::Result<()>;
 
 	///Flush the err-output stream
-	fn flush_err(&mut self) -> io::Result<()>;
+	fn flush_err(&self) -> io::Result<()>;
 	
 	///Flush Out stream and Err stream
 	#[inline]
-	fn flush(&mut self) -> io::Result<()> {
+	fn flush(&self) -> io::Result<()> {
 		if let Err(e) = self.flush_out() {
 			return Err(e);
 		}

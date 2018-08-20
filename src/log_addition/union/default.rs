@@ -48,7 +48,7 @@ impl<'a, Panic: LogPanic> LogEmptyConst for LogUnion<'a, LogTotalEmpty, LogTotal
 
 impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-     fn flush_out(&mut self) -> io::Result<()> {
+     fn flush_out(&self) -> io::Result<()> {
           if let Err(e) = self.0.flush_out() {
                return Err(e);
           }
@@ -56,7 +56,7 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush
      }
 
      #[inline(always)]
-	fn flush_err(&mut self) -> io::Result<()> {
+	fn flush_err(&self) -> io::Result<()> {
           if let Err(e) = self.0.flush_err() {
                return Err(e);
           }

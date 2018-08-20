@@ -68,12 +68,12 @@ impl<'a> LogBase<'a> for LogTotalEmpty {
 
 impl LogFlush for LogTotalEmpty {
 	#[inline(always)]	
-	fn flush_out(&mut self) -> io::Result<()> {
+	fn flush_out(&self) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn flush_err(&mut self) -> io::Result<()> {
+	fn flush_err(&self) -> io::Result<()> {
 		Ok( () )
 	}
 }

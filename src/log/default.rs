@@ -111,12 +111,12 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, 
 }
 
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a + Write , EL: 'a +  Write> LogFlush for LogDefault<'a, W, P, O, E, OL, EL> {
-	fn flush_out(&mut self) -> io::Result<()> {
-		self.out.flush()
+	fn flush_out(&self) -> io::Result<()> {
+		self.out.un_flush()
 	}
 	
-	fn flush_err(&mut self) -> io::Result<()> {
-		self.err.flush()
+	fn flush_err(&self) -> io::Result<()> {
+		self.err.un_flush()
 	}
 }
 	

@@ -21,14 +21,20 @@ fn main() {
                          match cluLog::log_addition::file::default_create_file("/tmp/clulog2.out") {
                               Ok(file2) => {
                                    union.default_union(file0).default_union(file2).to_box()
+                                   //динамический размер
+                                   //dynamic size
                               },
                               _ => {
                                    union.default_union(file0).to_box()
+                                   //динамический размер
+                                   //dynamic size
                               },
                          }
                     },
                     _ => {
                          union.to_box()
+                         //динамический размер
+                         //dynamic size
                     },
                }
           });
