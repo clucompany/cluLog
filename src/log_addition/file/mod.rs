@@ -11,6 +11,7 @@ use log_write::mutex::MutexWrite;
 use std::io;
 use log_shape::DefNoColorShape;
 
+pub mod buf;
 
 
 pub fn new_file<'a, W: LogShape, P: LogPanic<W>>(f: File) -> LogOneDefault<'a, W, P, MutexWrite<'a, File>, LogSafeMutexLock<'a, File>> {

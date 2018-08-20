@@ -34,13 +34,11 @@ impl<'a, T: 'a + Write> MutexWrite<'a, T> {
 impl<'a, T: 'a + Write> Write for MutexWrite<'a, T> {
      #[inline]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-          let mut lock = self._lock();
-          lock.write(buf)
+          self._lock().write(buf)
      }
      #[inline]
      fn flush(&mut self) -> io::Result<()> {
-          let mut lock = self._lock();
-          lock.flush()
+          self._lock().flush()
      }
 }
 
