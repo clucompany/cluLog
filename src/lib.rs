@@ -24,7 +24,7 @@ static LOGGER_INIT: Once = ONCE_INIT;
 
 
 #[inline]
-pub fn set_logger(log: &'static LogStatic<'static>) {
+pub fn set_slice_logger(log: &'static LogStatic<'static>) {
 	LOGGER_INIT.call_once(|| {
 		unsafe {
 			LOGGER = log;
@@ -32,11 +32,14 @@ pub fn set_logger(log: &'static LogStatic<'static>) {
 	});
 }
 
-
+#[inline(always)]
+pub fn set_logger<S: 'static + LogStatic<'static>>(log: S) {
+	set_boxed_logger(Box::new(log))
+}
 
 #[inline]
 pub fn set_boxed_logger(log: Box<LogStatic<'static>>) {
-	set_logger( unsafe { &*Box::into_raw(log) } )
+	set_slice_logger( unsafe { &*Box::into_raw(log) } )
 }
 
 
@@ -52,33 +55,33 @@ macro_rules! init_clulog {
 	(null) => {
 		use cluLog::log_addition::empty::total::LogTotalEmpty;
 
-		cluLog::set_logger(&LogTotalEmpty)
+		cluLog::set_slice_logger(&LogTotalEmpty)
 	};
 	
 	(none) => {
 		use cluLog::log_addition::empty::default::LogEmpty;
-		cluLog::set_boxed_logger(Box::new(LogEmpty::default()))
+		cluLog::set_logger(LogEmpty::default())
 	};
 	(total_none) => {
 		use cluLog::log_addition::empty::total::LogTotalEmpty;
 
-		cluLog::set_logger(&LogTotalEmpty);
+		cluLog::set_slice_logger(&LogTotalEmpty);
 	};
 
 	(one) => {
 		use cluLog::log::default_one::LogOneDefault;
-		cluLog::set_boxed_logger(Box::new(LogOneDefault::default()));
+		cluLog::set_logger(LogOneDefault::default());
 	};
 	(one, $e:expr) => {
 		use cluLog::log::default_one::LogOneDefault;
-		cluLog::set_boxed_logger(Box::new(LogOneDefault::new($e)));
+		cluLog::set_logger(LogOneDefault::new($e));
 	};
 
 	(union, $panic:tt, $a:expr, $b:expr) => {
-		cluLog::set_boxed_logger(Box::new($a.union::<$panic, _>($b)));
+		cluLog::set_logger($a.union::<$panic, _>($b));
 	};
 	(union, $a:expr, $b:expr) => {
-		cluLog::set_boxed_logger(Box::new($a.default_union($b)));
+		cluLog::set_logger($a.default_union($b));
 	};
 	
 	/*(panic, $panic:tt) => {
@@ -99,15 +102,15 @@ macro_rules! init_clulog {
 
 	() => {
 		use cluLog::log::default::LogDefault;
-		cluLog::set_boxed_logger(Box::new(LogDefault::default()));
+		cluLog::set_logger(LogDefault::default());
 	};
 	($e: expr) => {
 		use cluLog::log::default_one::LogOneDefault;
-		cluLog::set_boxed_logger(LogOneDefault::new($e));
+		cluLog::set_logger(LogOneDefault::new($e));
 	};
 	($e: expr, $e2: expr) => {
 		use cluLog::log::default::LogDefault;
-		cluLog::set_boxed_logger(LogDefault::new($e, $e2));
+		cluLog::set_logger(LogDefault::new($e, $e2));
 	};
 }
 
