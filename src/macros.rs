@@ -182,7 +182,7 @@ macro_rules! eprint {
 #[macro_export]
 macro_rules! eprintln {
 	() => (
-	    eprint!("\n")
+		eprint!("\n")
 	);
 	($fmt:expr) => (
 		eprint!(concat!($fmt, "\n"))

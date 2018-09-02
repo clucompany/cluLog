@@ -35,7 +35,7 @@ pub fn set_slice_logger(log: &'static LogStatic<'static>) {
 
 #[inline(always)]
 pub fn set_logger<S: 'static + LogStatic<'static>>(log: S) {
-	set_boxed_logger(Box::new(log))
+	set_boxed_logger(Box::new( log ))
 }
 
 #[inline]
@@ -54,27 +54,27 @@ pub fn as_log<'a>() -> &'a LogStatic<'static> {
 #[macro_export]
 macro_rules! init_clulog {
 	(null) => {
-		use cluLog::log_addition::empty::total::LogTotalEmpty;
+		use $crate::log_addition::empty::total::LogTotalEmpty;
 
 		$crate::set_slice_logger(&LogTotalEmpty)
 	};
 	
 	(none) => {
-		use cluLog::log_addition::empty::default::LogEmpty;
+		use $crate::log_addition::empty::default::LogEmpty;
 		$crate::set_logger(LogEmpty::default())
 	};
 	(total_none) => {
-		use cluLog::log_addition::empty::total::LogTotalEmpty;
+		use $crate::log_addition::empty::total::LogTotalEmpty;
 
 		$crate::set_slice_logger(&LogTotalEmpty);
 	};
 
 	(one) => {
-		use cluLog::log::default_one::LogOneDefault;
+		use $crate::log::default_one::LogOneDefault;
 		$crate::set_logger(LogOneDefault::default());
 	};
 	(one, $e:expr) => {
-		use cluLog::log::default_one::LogOneDefault;
+		use $crate::log::default_one::LogOneDefault;
 		$crate::set_logger(LogOneDefault::new($e));
 	};
 
@@ -102,15 +102,15 @@ macro_rules! init_clulog {
 
 
 	() => {
-		use cluLog::log::default::LogDefault;
+		use $crate::log::default::LogDefault;
 		$crate::set_logger(LogDefault::default());
 	};
 	($e: expr) => {
-		use cluLog::log::default_one::LogOneDefault;
+		use $crate::log::default_one::LogOneDefault;
 		$crate::set_logger(LogOneDefault::new($e));
 	};
 	($e: expr, $e2: expr) => {
-		use cluLog::log::default::LogDefault;
+		use $crate::log::default::LogDefault;
 		$crate::set_logger(LogDefault::new($e, $e2));
 	};
 }
