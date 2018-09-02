@@ -8,6 +8,7 @@ pub mod log_shape;
 pub mod log_addition;
 pub mod log_lock;
 pub mod log_write;
+
 mod macros;
 
 use log_addition::empty::total::LogTotalEmpty;
@@ -55,33 +56,33 @@ macro_rules! init_clulog {
 	(null) => {
 		use cluLog::log_addition::empty::total::LogTotalEmpty;
 
-		cluLog::set_slice_logger(&LogTotalEmpty)
+		$crate::set_slice_logger(&LogTotalEmpty)
 	};
 	
 	(none) => {
 		use cluLog::log_addition::empty::default::LogEmpty;
-		cluLog::set_logger(LogEmpty::default())
+		$crate::set_logger(LogEmpty::default())
 	};
 	(total_none) => {
 		use cluLog::log_addition::empty::total::LogTotalEmpty;
 
-		cluLog::set_slice_logger(&LogTotalEmpty);
+		$crate::set_slice_logger(&LogTotalEmpty);
 	};
 
 	(one) => {
 		use cluLog::log::default_one::LogOneDefault;
-		cluLog::set_logger(LogOneDefault::default());
+		$crate::set_logger(LogOneDefault::default());
 	};
 	(one, $e:expr) => {
 		use cluLog::log::default_one::LogOneDefault;
-		cluLog::set_logger(LogOneDefault::new($e));
+		$crate::set_logger(LogOneDefault::new($e));
 	};
 
 	(union, $panic:tt, $a:expr, $b:expr) => {
-		cluLog::set_logger($a.union::<$panic, _>($b));
+		$crate::set_logger($a.union::<$panic, _>($b));
 	};
 	(union, $a:expr, $b:expr) => {
-		cluLog::set_logger($a.default_union($b));
+		$crate::set_logger($a.default_union($b));
 	};
 	
 	/*(panic, $panic:tt) => {
@@ -102,15 +103,15 @@ macro_rules! init_clulog {
 
 	() => {
 		use cluLog::log::default::LogDefault;
-		cluLog::set_logger(LogDefault::default());
+		$crate::set_logger(LogDefault::default());
 	};
 	($e: expr) => {
 		use cluLog::log::default_one::LogOneDefault;
-		cluLog::set_logger(LogOneDefault::new($e));
+		$crate::set_logger(LogOneDefault::new($e));
 	};
 	($e: expr, $e2: expr) => {
 		use cluLog::log::default::LogDefault;
-		cluLog::set_logger(LogDefault::new($e, $e2));
+		$crate::set_logger(LogDefault::new($e, $e2));
 	};
 }
 
@@ -119,7 +120,7 @@ macro_rules! init_clulog {
 #[macro_export]
 macro_rules! as_log {
 	() => {
-		cluLog::as_log()
+		$crate::as_log()
 	};
 }
 
