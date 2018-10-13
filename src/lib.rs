@@ -40,13 +40,17 @@ pub fn set_logger<S: 'static + LogStatic<'static>>(log: S) {
 
 #[inline]
 pub fn set_boxed_logger(log: Box<LogStatic<'static>>) {
-	set_slice_logger( unsafe { &*Box::into_raw(log) } )
+	LOGGER_INIT.call_once(|| {
+		unsafe {
+			LOGGER = &*Box::into_raw(log);
+		}
+	});
 }
 
 
 ///Obtaining a link to active logging
 #[inline(always)]
-pub fn as_log<'a>() -> &'a LogStatic<'static> {
+pub fn as_log() -> &'static LogStatic<'static> {
 	unsafe { LOGGER }
 }
 
