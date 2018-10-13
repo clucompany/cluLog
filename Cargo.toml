@@ -1,6 +1,6 @@
 [package]
 name = "cluLog"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Денис Котляров <denis2005991@gmail.com>"]
 
 [lib]
