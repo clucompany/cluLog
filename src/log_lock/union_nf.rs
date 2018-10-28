@@ -7,7 +7,6 @@ use std::marker::PhantomData;
 use std::io::Write;
 use std::io;
 
-#[allow(non_camel_case_types)]
 pub struct UnionNFLock<'a, W: Write + 'a, W2: Write + 'a>(W,W2, PhantomData<&'a ()>);
 
 impl<'a, W: Write + 'a, W2: Write + 'a> UnionNFLock<'a, W, W2> {
@@ -64,3 +63,10 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionNFLock<'a, W, W2> {
      }
 }
 impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionNFLock<'a, W, W2> {}
+
+
+impl<'a, W: Write + 'a + Clone, W2: Write + 'a + Clone> Clone for UnionNFLock<'a, W, W2> {
+     fn clone(&self) -> Self {
+          Self::new(self.0.clone(), self.1.clone())
+     }
+}

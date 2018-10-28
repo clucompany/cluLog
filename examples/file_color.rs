@@ -4,12 +4,10 @@ extern crate cluLog;
 use cluLog::DefLogPanic;
 
 fn main() {
-	//init_clulog!();	
-	
      {
           //Colored mode!
           match cluLog::log_addition::file::create_file::<cluLog::log_shape::DefColorShape, DefLogPanic, _>("/tmp/test") {
-               Ok(file_log) => cluLog::set_logger(file_log),
+               Ok(file_log) => {cluLog::set_logger(file_log);} ,
                Err(e) => {
                     panic!("Err open file output, {:?}", e);
                     return;

@@ -1,14 +1,22 @@
 
 
 use std::io::Write;
-use log_lock::union_nf::UnionNFLock;
 
-pub mod default;
-pub mod default_nf;
-pub mod union;
-pub mod union_nf;
-pub mod mutex;
-pub mod mutex_nf;
+mod default;
+mod default_nf;
+mod union;
+mod union_nf;
+mod mutex;
+mod mutex_nf;
+
+
+pub use self::default::*;
+pub use self::default_nf::*;
+pub use self::union::*;
+pub use self::union_nf::*;
+pub use self::mutex::*;
+pub use self::mutex_nf::*;
+
 
 
 ///The constructor of empty structures
@@ -23,3 +31,4 @@ pub trait LogSafeLock<'a>: Write + 'a {
           UnionNFLock::new(self, b)
      }*/
 }
+

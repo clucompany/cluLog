@@ -1,6 +1,6 @@
 [package]
 name = "cluLog"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["Денис Котляров <denis2005991@gmail.com>"]
 
 [lib]
@@ -8,4 +8,4 @@ name = "cluLog"
 path = "src/lib.rs"
 
 [dependencies]
-cluColor = "0.1.4"
+cluColor = "0.1.5"

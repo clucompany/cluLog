@@ -7,7 +7,7 @@ pub struct EmptyWrite;
 
 impl EmptyWrite {
 	#[inline]
-	pub fn new() -> Self {
+	pub const fn new() -> Self {
 		EmptyWrite
 	}
 }

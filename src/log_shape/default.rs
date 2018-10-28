@@ -6,9 +6,9 @@ use std::io;
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone)]
-pub enum cluLogShape {}
+pub enum cluShape {}
 
-impl LogShape for cluLogShape {	
+impl LogShape for cluShape {	
 	
 	#[inline(always)]
 	fn warning<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {

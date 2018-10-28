@@ -2,12 +2,12 @@
 
 use log_shape::LogShape;
 use DefLogPanic;
-use log_lock::mutex::LogSafeMutexLock;
+use log_lock::LogSafeMutexLock;
 use std::path::Path;
 use std::fs::File;
-use log::default_one::LogOneDefault;
+use log::LogOneDefault;
 use log_panic::LogPanic;
-use log_write::mutex::MutexWrite;
+use log_write::MutexWrite;
 use std::io;
 use log_shape::DefNoColorShape;
 

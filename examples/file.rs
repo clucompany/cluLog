@@ -9,7 +9,7 @@ fn main() {
      {
           //Colored mode!
           match cluLog::log_addition::file::default_create_file("/tmp/test") {
-               Ok(file_log) => cluLog::set_logger(file_log),
+               Ok(file_log) => {cluLog::set_logger(file_log);},
                Err(e) => {
                     panic!("Err open file output, {:?}", e);
                     return;

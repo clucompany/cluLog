@@ -1,5 +1,7 @@
 
-pub mod default;
+mod default;
+
+pub use self::default::*;
 
 use std::fmt::Debug;
 use std::fmt::Arguments;
@@ -13,4 +15,18 @@ pub type DefaultPanic = self::default::DefaultPanic;
 
 pub trait LogPanic<Shape: LogShape = DefLogShape>: Debug {
 	fn panic<'a, W: Write>(write: W, arg: Arguments<'a>) -> io::Result<()>;
+}
+
+impl<'l, A: LogPanic<L>, L: LogShape> LogPanic<L> for &'l A {
+	#[inline(always)]
+	fn panic<'a, W: Write>(write: W, arg: Arguments<'a>) -> io::Result<()> {
+		A::panic(write, arg)
+	}
+}
+
+impl<'l, A: LogPanic<L>, L: LogShape> LogPanic<L> for &'l mut A {
+	#[inline(always)]
+	fn panic<'a, W: Write>(write: W, arg: Arguments<'a>) -> io::Result<()> {
+		A::panic(write, arg)
+	}
 }

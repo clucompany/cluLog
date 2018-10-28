@@ -7,23 +7,21 @@ use ::std::io;
 use clucolor::colors::*;
 use clucolor::cluColor;
 
-pub type PanicColor = 	BrightRed;
-pub type ErrColor = 	BrightRed;
+type PanicColor = 	BrightRed;
+type ErrColor = 	BrightRed;
 
+type WarningColor = 	BrightYellow;
+type InfoColor = 	BrightCyan;
+//type TraceColor = 	BrightYellow;
+type UnkColor = 	BrightBlue;
 
-pub type WarningColor = 	BrightYellow;
-pub type InfoColor = 	BrightCyan;
-//pub type TraceColor = 	BrightYellow;
-pub type UnkColor = 	BrightBlue;
+type PrintColor = 	BrightWhite;
+type EPrintColor = 	BrightWhite;
 
-pub type PrintColor = 	BrightWhite;
-pub type EPrintColor = 	BrightWhite;
-
-#[allow(non_camel_case_types)]
 #[derive(Debug)]
-pub enum cluLogColorShape {}
+pub enum cluColorShape {}
 
-impl LogShape for cluLogColorShape {	
+impl LogShape for cluColorShape {	
 	
 	#[inline(always)]
 	fn warning<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {

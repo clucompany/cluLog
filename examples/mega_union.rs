@@ -6,10 +6,10 @@ use cluLog::log_addition::union::LogUnionConst;
 
 fn main() {
      {
-          let union = cluLog::log::default::LogDefault::default(
+          let union = cluLog::log::LogDefault::default(
                
           ).default_union(
-               cluLog::log::default::LogDefault::default()
+               cluLog::log::LogDefault::default()
 
           );
 

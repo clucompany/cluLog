@@ -65,3 +65,11 @@ impl<'a, W: Write + 'a> Write for LogSafeWriteLock<'a, W> {
 
 
 impl<'a, W: Write + 'a> LogSafeLock<'a> for LogSafeWriteLock<'a, W> {}
+
+
+impl<'a, W: Write + 'a + Clone> Clone for LogSafeWriteLock<'a, W> {
+
+	fn clone(&self) -> Self {
+		Self::new(self.0.clone())
+	}
+}

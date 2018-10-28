@@ -73,3 +73,12 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionLock<'a, W, W2> {
 }
 
 impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionLock<'a, W, W2> {}
+
+
+impl<'a, W: Write + 'a + Clone, W2: Write + 'a + Clone> Clone for UnionLock<'a, W, W2> {
+
+     fn clone(&self) -> Self {
+          Self::new(self.0.clone(), self.1.clone())
+     }
+
+}

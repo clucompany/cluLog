@@ -64,3 +64,5 @@ impl<'a, W: Write + 'a> Write for LogSafeMutexLockNF<'a, W> {
 
 
 impl<'a, W: Write + 'a> LogSafeLock<'a> for LogSafeMutexLockNF<'a, W> {}
+
+

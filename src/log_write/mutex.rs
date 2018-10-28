@@ -3,9 +3,9 @@
 use std::sync::MutexGuard;
 use std::marker::PhantomData;
 use std::io::Write;
-use log_lock::mutex_nf::LogSafeMutexLockNF;
+use log_lock::LogSafeMutexLockNF;
 use std::sync::Mutex;
-use log_lock::mutex::LogSafeMutexLock;
+use log_lock::LogSafeMutexLock;
 use log_write::LogWrite;
 use std::io;
 
@@ -61,5 +61,14 @@ impl<'a, T: 'a + Write> LogWrite<'a, LogSafeMutexLockNF<'a, T>> for MutexWrite<'
      #[inline(always)]
      fn un_flush(&self) -> io::Result<()> {
           self._lock().flush()
+     }
+}
+
+impl<'a, T: 'a + Write + Clone> Clone for MutexWrite<'a, T> {
+     #[inline]
+     fn clone(&self) -> Self {
+          MutexWrite::new(
+               self._lock().clone()
+          )
      }
 }

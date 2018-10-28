@@ -7,12 +7,12 @@ use std::io;
 
 fn main() {
      {
-          let union = cluLog::log::default::LogDefault::default(
+          let union = cluLog::log::LogDefault::default(
                
           ).default_union(
-               cluLog::log::default::LogDefault::default()
+               cluLog::log::LogDefault::default()
           ).default_union(
-               cluLog::log::default::LogDefault::<DefNoColorShape, DefLogPanic, _, _, _, _>::new(io::stdout(), io::stderr())
+               cluLog::log::LogDefault::<DefNoColorShape, DefLogPanic, _, _, _, _>::new(io::stdout(), io::stderr())
           );
 
           cluLog::set_boxed_logger({

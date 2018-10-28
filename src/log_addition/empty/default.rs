@@ -1,22 +1,22 @@
 
+use log_core::LogLockIO;
+use log_core::LogExtend;
+use log_core::LogFlush;
+use log_core::LogStatic;
+use log_core::LogBase;
 use log_write::LogWrite;
 use log_lock::LogSafeLock;
-use log::LogLockIO;
 use std::io::Stderr;
 use std::io::Stdout;
 use std::marker::PhantomData;
 use std::io::StderrLock;
 use std::io::StdoutLock;
-use log::LogExtend;
-use log::LogStatic;
-use log::LogBase;
 use log_addition::union::LogUnionConst;
-use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
 use std::io::Write;
-use log_lock::default_nf::LogSafeWriteNFLock;
-use log_lock::default::LogSafeWriteLock;
+use log_lock::LogSafeWriteNFLock;
+use log_lock::LogSafeWriteLock;
 
 
 #[derive(Debug)]

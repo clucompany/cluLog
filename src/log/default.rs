@@ -1,8 +1,12 @@
 
+use log_core::LogLockIO;
+use log_core::LogExtend;
+use log_core::LogStatic;
+use log_core::LogFlush;
+use log_core::LogBase;
 use log_write::LogWrite;
 use DefLogShape;
 use log_lock::LogSafeLock;
-use log::LogLockIO;
 use log_addition::union::LogUnionConst;
 use log_addition::empty::empty_write::EmptyWrite;
 use log_addition::empty::LogEmptyConst;
@@ -11,18 +15,14 @@ use std::io::StdoutLock;
 use std::io::Stdout;
 use std::io::Stderr;
 use DefLogPanic;
-use log::LogFlush;
 use std::marker::PhantomData;
 use log_shape::LogShape;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
-use log::LogExtend;
-use log::LogStatic;
-use log::LogBase;
 use std::io;
-use log_lock::default_nf::LogSafeWriteNFLock;
-use log_lock::default::LogSafeWriteLock;
+use log_lock::LogSafeWriteNFLock;
+use log_lock::LogSafeWriteLock;
 
 
 #[derive(Debug)]

@@ -1,4 +1,6 @@
 
+#![feature(associated_type_defaults)]
+
 #[macro_use]
 extern crate clucolor;
 
@@ -8,11 +10,12 @@ pub mod log_shape;
 pub mod log_addition;
 pub mod log_lock;
 pub mod log_write;
+pub mod log_core;
 
 mod macros;
 
+use log_core::LogStatic;
 use log_addition::empty::total::LogTotalEmpty;
-use log::LogStatic;
 use std::sync::{Once, ONCE_INIT};
 
 
@@ -25,26 +28,40 @@ static LOGGER_INIT: Once = ONCE_INIT;
 
 
 #[inline]
-pub fn set_slice_logger(log: &'static LogStatic<'static>) {
+pub fn set_slice_logger(log: &'static LogStatic<'static>) -> bool {
+	let mut is_set = false;
 	LOGGER_INIT.call_once(|| {
 		unsafe {
 			LOGGER = log;
 		}
+		is_set = true;
 	});
+	is_set
 }
 
 #[inline(always)]
-pub fn set_logger<S: 'static + LogStatic<'static>>(log: S) {
-	set_boxed_logger(Box::new( log ))
+pub fn set_logger<S: 'static + LogStatic<'static>>(log: S) -> bool {
+	let mut is_set = false;
+	LOGGER_INIT.call_once(move || {
+		unsafe {
+			let log = Box::new(log);
+			LOGGER = &*Box::into_raw(log);
+		}
+		is_set = true;
+	});
+	is_set
 }
 
 #[inline]
-pub fn set_boxed_logger(log: Box<LogStatic<'static>>) {
+pub fn set_boxed_logger(log: Box<LogStatic<'static>>) -> bool {
+	let mut is_set = false;
 	LOGGER_INIT.call_once(|| {
 		unsafe {
 			LOGGER = &*Box::into_raw(log);
 		}
+		is_set = true;
 	});
+	is_set
 }
 
 
@@ -74,11 +91,11 @@ macro_rules! init_clulog {
 	};
 
 	(one) => {
-		use $crate::log::default_one::LogOneDefault;
+		use $crate::log::LogOneDefault;
 		$crate::set_logger(LogOneDefault::default());
 	};
 	(one, $e:expr) => {
-		use $crate::log::default_one::LogOneDefault;
+		use $crate::log::LogOneDefault;
 		$crate::set_logger(LogOneDefault::new($e));
 	};
 
@@ -106,15 +123,15 @@ macro_rules! init_clulog {
 
 
 	() => {
-		use $crate::log::default::LogDefault;
+		use $crate::log::LogDefault;
 		$crate::set_logger(LogDefault::default());
 	};
 	($e: expr) => {
-		use $crate::log::default_one::LogOneDefault;
+		use $crate::log::LogOneDefault;
 		$crate::set_logger(LogOneDefault::new($e));
 	};
 	($e: expr, $e2: expr) => {
-		use $crate::log::default::LogDefault;
+		use $crate::log::LogDefault;
 		$crate::set_logger(LogDefault::new($e, $e2));
 	};
 }

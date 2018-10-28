@@ -1,21 +1,21 @@
 
 //!Combining several log systems into one.
 
+use log_core::LogStatic;
+use log_core::LogLockIO;
+use log_core::LogBase;
+use log_core::LogFlush;
+use log_core::LogExtend;
 use log_lock::LogSafeLock;
-use log::LogLockIO;
-use log::LogStatic;
-use log::LogBase;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::total::LogTotalEmpty;
-use log::LogFlush;
 use std::marker::PhantomData;
 use std::io;
 use log_addition::union::LogUnionConst;
-use log::LogExtend;
-use log_lock::union::UnionLock;
-use log_lock::union_nf::UnionNFLock;
+use log_lock::UnionLock;
+use log_lock::UnionNFLock;
 
 pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 
@@ -35,6 +35,14 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnion
           Box::new(self)
      }
 }
+
+impl<'a, A: 'a + LogExtend<'a> + Clone, B: 'a + LogExtend<'a> + Clone, Panic: LogPanic> Clone for LogUnion<'a, A, B, Panic> {
+     fn clone(&self) -> Self {
+          LogUnion::new(self.0.clone(), self.1.clone())
+     }
+}
+
+
 
 
 impl<'a, Panic: LogPanic> LogEmptyConst for LogUnion<'a, LogTotalEmpty, LogTotalEmpty, Panic> {

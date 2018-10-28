@@ -1,24 +1,24 @@
 
 
+use log_core::LogBase;
+use log_core::LogStatic;
+use log_core::LogExtend;
+use log_core::LogLockIO;
+use log_core::LogFlush;
 use log_lock::LogSafeLock;
-use log::LogLockIO;
-use log::LogStatic;
-use log::LogExtend;
-use log::LogBase;
 use log_addition::union::LogUnionConst;
-use log::LogFlush;
 use std::fmt::Arguments;
 use std::io;
 use log_addition::empty::LogEmptyConst;
-use log_lock::default::LogSafeWriteLock;
-use log_lock::default_nf::LogSafeWriteNFLock;
+use log_lock::LogSafeWriteLock;
+use log_lock::LogSafeWriteNFLock;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LogTotalEmpty;
 
 impl LogTotalEmpty {
-	#[inline]
-	pub fn new() -> Self {
+	#[inline(always)]
+	pub const fn new() -> Self {
 		LogTotalEmpty
 	}
 }

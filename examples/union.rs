@@ -3,7 +3,7 @@
 extern crate cluLog;
 use cluLog::log_addition::union::LogUnionConst;
 use cluLog::log_addition::empty::LogEmptyConst;
-use cluLog::log::default::LogDefault;
+use cluLog::log::LogDefault;
 use cluLog::DefLogPanic;
 
 
