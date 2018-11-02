@@ -1,8 +1,8 @@
 
+use log_write::EmptyWrite;
 use log_lock::LogSafeLock;
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
-use log_addition::empty::empty_write::EmptyWrite;
 use std::marker::PhantomData;
 use std::io::Write;
 use std::io;
@@ -15,11 +15,6 @@ impl<'a, W: Write + 'a> LogSafeWriteLock<'a, W> {
 	#[inline]
 	pub fn new(out: W) -> Self {
 		LogSafeWriteLock(out, PhantomData)
-	}
-
-	#[inline]
-	pub fn impled(out: W) -> impl LogSafeLock<'a> + 'a {
-		Self::new(out)
 	}
 
 	#[inline]
@@ -44,27 +39,39 @@ impl<'a, W: Write + 'a> Debug for LogSafeWriteLock<'a, W> {
 		f.pad("LogSafeWriteLock { .. }")
 	}
 }
-
+/*
 impl<'a, W: Write + 'a> Drop for LogSafeWriteLock<'a, W> {
 	#[inline]
 	fn drop(&mut self) {
 		let _e = self.0.flush();
 	}
 }
+*/
 
 impl<'a, W: Write + 'a> Write for LogSafeWriteLock<'a, W> {
      #[inline(always)]
-     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-          self.0.write(buf)
-     }
-     #[inline(always)]
-     fn flush(&mut self) -> io::Result<()> {
-          self.0.flush()
-     }
+	fn write(&mut self, buf: &[u8]) -> ::std::io::Result<usize> {
+		self.0.write(buf)
+	}
+
+	#[inline(always)]
+	fn flush(&mut self) -> ::std::io::Result<()> {
+		self.0.flush()
+	}
+
+	#[inline(always)]
+	fn write_all(&mut self, buf: &[u8]) -> ::std::io::Result<()> {
+		self.0.write_all(buf)
+	}
+
+	#[inline(always)]
+	fn write_fmt(&mut self, fmt: ::std::fmt::Arguments) -> ::std::io::Result<()> {
+		self.0.write_fmt(fmt)
+	}
 }
 
 
-impl<'a, W: Write + 'a> LogSafeLock<'a> for LogSafeWriteLock<'a, W> {}
+//impl<'a, W: Write + 'a> LogSafeLock<'a> for LogSafeWriteLock<'a, W> {}
 
 
 impl<'a, W: Write + 'a + Clone> Clone for LogSafeWriteLock<'a, W> {

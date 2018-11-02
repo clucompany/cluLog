@@ -4,7 +4,7 @@
 #[macro_use]
 extern crate clucolor;
 
-pub mod log;
+mod log;
 pub mod log_panic;
 pub mod log_shape;
 pub mod log_addition;
@@ -14,6 +14,7 @@ pub mod log_core;
 
 mod macros;
 
+pub use self::log::*;
 use log_core::LogStatic;
 use log_addition::empty::total::LogTotalEmpty;
 use std::sync::{Once, ONCE_INIT};
@@ -91,11 +92,11 @@ macro_rules! init_clulog {
 	};
 
 	(one) => {
-		use $crate::log::LogOneDefault;
+		use $crate::LogOneDefault;
 		$crate::set_logger(LogOneDefault::default());
 	};
 	(one, $e:expr) => {
-		use $crate::log::LogOneDefault;
+		use $crate::LogOneDefault;
 		$crate::set_logger(LogOneDefault::new($e));
 	};
 
@@ -123,15 +124,15 @@ macro_rules! init_clulog {
 
 
 	() => {
-		use $crate::log::LogDefault;
+		use $crate::LogDefault;
 		$crate::set_logger(LogDefault::default());
 	};
 	($e: expr) => {
-		use $crate::log::LogOneDefault;
+		use $crate::LogOneDefault;
 		$crate::set_logger(LogOneDefault::new($e));
 	};
 	($e: expr, $e2: expr) => {
-		use $crate::log::LogDefault;
+		use $crate::LogDefault;
 		$crate::set_logger(LogDefault::new($e, $e2));
 	};
 }

@@ -13,7 +13,7 @@ pub trait LogEmptyConst {
      fn empty() -> Self;
 
      #[inline]
-     fn empty_boxed<'a>() -> Box<LogSafeLock<'a> + 'a> where Self: Sized + 'a + LogSafeLock<'a> {
+     fn empty_boxed<'a>() -> Box<Self> where Self: Sized + 'a + LogSafeLock<'a> {
 		Box::new(Self::empty())
 	}
 }

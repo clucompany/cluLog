@@ -1,4 +1,5 @@
 
+use log_write::EmptyWrite;
 use log_core::LogExtend;
 use log_core::LogStatic;
 use log_core::LogLockIO;
@@ -7,8 +8,6 @@ use log_core::LogFlush;
 use log_write::LogWrite;
 use DefLogShape;
 use log_lock::LogSafeLock;
-use log_addition::union::LogUnionConst;
-use log_addition::empty::empty_write::EmptyWrite;
 use log_addition::empty::LogEmptyConst;
 use std::io::StdoutLock;
 use std::io::Stdout;
@@ -20,8 +19,9 @@ use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
 use log_lock::LogSafeWriteLock;
-use log_lock::LogSafeWriteNFLock;
 
+
+///Log system with one out stream.
 #[derive(Debug)]
 pub struct LogOneDefault<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> {
 	_b:	PhantomData<W>,
@@ -118,25 +118,17 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Writ
 }
 	
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Write> LogLockIO<'a> for LogOneDefault<'a, W, P, O, OL> {
-	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.out.lock())
-	}
-	
-	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.out.lock())
-	}
-
 	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteNFLock::boxed(self.out.lock())
+		LogSafeWriteLock::boxed(self.out.lock())
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteNFLock::boxed(self.out.lock())
+		LogSafeWriteLock::boxed(self.out.lock())
 	}
 }
 
 
 
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogUnionConst<'a> for LogOneDefault<'a, W, P, O, OL> {}
+//impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogUnionConst<'a> for LogOneDefault<'a, W, P, O, OL> {}
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogStatic<'a> for LogOneDefault<'a, W, P, O, OL> {}
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogExtend<'a> for LogOneDefault<'a, W, P, O, OL> {}

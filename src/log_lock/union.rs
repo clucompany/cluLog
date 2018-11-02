@@ -1,9 +1,9 @@
 
 
+use log_write::EmptyWrite;
 use log_lock::LogSafeLock;
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
-use log_addition::empty::empty_write::EmptyWrite;
 use std::marker::PhantomData;
 use std::io::Write;
 use std::io;
@@ -36,13 +36,14 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Debug for UnionLock<'a, W, W2> {
 		f.pad("UnionLock { .. }")
 	}
 }
-
+/*
 impl<'a, W: Write + 'a, W2: Write + 'a> Drop for UnionLock<'a, W, W2> {
 	#[inline(always)]
 	fn drop(&mut self) {
 		let _e = self.flush();
 	}
 }
+*/
 
 impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionLock<'a, W, W2> {
      #[inline(always)]
@@ -70,9 +71,25 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionLock<'a, W, W2> {
           }
           self.1.flush()
      }
+
+	#[inline(always)]
+	fn write_all(&mut self, buf: &[u8]) -> ::std::io::Result<()> {
+		if let Err(e) = self.0.write_all(buf) {
+               return Err(e);
+          }
+          self.1.write_all(buf)
+	}
+
+	#[inline(always)]
+	fn write_fmt(&mut self, fmt: ::std::fmt::Arguments) -> ::std::io::Result<()> {
+		if let Err(e) = self.0.write_fmt(fmt) {
+               return Err(e);
+          }
+          self.1.write_fmt(fmt)
+	}
 }
 
-impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionLock<'a, W, W2> {}
+//impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionLock<'a, W, W2> {}
 
 
 impl<'a, W: Write + 'a + Clone, W2: Write + 'a + Clone> Clone for UnionLock<'a, W, W2> {

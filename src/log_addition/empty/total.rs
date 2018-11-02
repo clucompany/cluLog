@@ -11,7 +11,6 @@ use std::fmt::Arguments;
 use std::io;
 use log_addition::empty::LogEmptyConst;
 use log_lock::LogSafeWriteLock;
-use log_lock::LogSafeWriteNFLock;
 
 #[derive(Debug, Clone)]
 pub struct LogTotalEmpty;
@@ -26,42 +25,42 @@ impl LogTotalEmpty {
 
 impl<'a> LogBase<'a> for LogTotalEmpty {
 	#[inline(always)]
-	fn warning<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
+	fn warning<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn info<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
+	fn info<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn error<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
+	fn error<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn panic<'l>(&self, args: Arguments<'l>) -> io::Result<()> {
+	fn panic<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
 		panic!("{}", args);
 	}
 	
 	#[inline(always)]	
-	fn unknown<'l>(&self, _name: &'static str, _args: Arguments<'l>) -> io::Result<()> {
+	fn unknown<'l>(&'a self, _name: &'static str, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 
 	#[inline(always)]
-	fn trace<'l>(&self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'l>) -> io::Result<()> {
+	fn trace<'l>(&'a self, _line: u32, _pos: u32, _file: &'static str, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]	
-	fn print<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
+	fn print<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]	
-	fn eprint<'l>(&self, _args: Arguments<'l>) -> io::Result<()> {
+	fn eprint<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
 		Ok( () )
 	}
 }
@@ -79,24 +78,16 @@ impl LogFlush for LogTotalEmpty {
 }
 
 impl<'a> LogLockIO<'a> for LogTotalEmpty {
-	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::empty_boxed()
-	}
-
-	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::empty_boxed()
-	}
-
 	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteNFLock::empty_boxed()
+		LogSafeWriteLock::empty_boxed()
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteNFLock::empty_boxed()
+		LogSafeWriteLock::empty_boxed()
 	}
 }
 
 
-impl<'a> LogUnionConst<'a> for LogTotalEmpty {}
+//impl<'a> LogUnionConst<'a> for LogTotalEmpty {}
 impl<'a> LogStatic<'a> for LogTotalEmpty {}
 impl<'a> LogExtend<'a> for LogTotalEmpty {}

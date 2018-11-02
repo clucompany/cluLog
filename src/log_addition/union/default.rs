@@ -15,7 +15,6 @@ use std::marker::PhantomData;
 use std::io;
 use log_addition::union::LogUnionConst;
 use log_lock::UnionLock;
-use log_lock::UnionNFLock;
 
 pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 
@@ -73,7 +72,7 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush
 }
 
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogBase<'a> for LogUnion<'a, A, B, Panic> {
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
 	fn warning<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
 		if let Err(e) = self.0.warning(args) {
@@ -140,23 +139,13 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogBase<
 	
 impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		UnionLock::boxed(self.0.lock_out(), self.1.lock_out())
-	}
-	
-     #[inline(always)]
-	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		UnionLock::boxed(self.0.lock_err(), self.1.lock_err())
-	}
-
-     #[inline(always)]
 	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		UnionNFLock::boxed(self.0.lock_out(), self.1.lock_out())
+		UnionLock::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 
      #[inline(always)]
 	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		UnionNFLock::boxed(self.0.lock_err(), self.1.lock_err())
+		UnionLock::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 }
 
@@ -173,6 +162,6 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> From< (A
 }
 
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnionConst<'a> for LogUnion<'a, A, B, Panic> {}
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogExtend<'a> for LogUnion<'a, A, B, Panic> {}
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogStatic<'a> for LogUnion<'a, A, B, Panic> where Self: 'static {}
+//impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogUnionConst<'a> for LogUnion<'a, A, B, Panic> {}
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogExtend<'a> for LogUnion<'a, A, B, Panic> {}
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogStatic<'a> for LogUnion<'a, A, B, Panic> where Self: 'static {}

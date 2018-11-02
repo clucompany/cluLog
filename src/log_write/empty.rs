@@ -1,7 +1,31 @@
 
 use log_write::LogWrite;
-use log_addition::empty::empty_write::EmptyWrite;
 use std::io;
+use std::io::Write;
+
+#[derive(Debug, Clone)]
+pub struct EmptyWrite;
+
+impl EmptyWrite {
+	#[inline]
+	pub const fn new() -> Self {
+		EmptyWrite
+	}
+}
+
+impl Write for EmptyWrite {
+	#[inline(always)]
+	fn write<'a>(&mut self, _buf: &'a [u8]) -> io::Result<usize> {
+		Ok( 0 )
+	}
+
+	#[inline(always)]
+	fn flush(&mut self) -> io::Result<()> {
+		Ok( () )
+	}
+}
+
+
 
 impl<'a> LogWrite<'a, EmptyWrite> for EmptyWrite {
      #[inline(always)]

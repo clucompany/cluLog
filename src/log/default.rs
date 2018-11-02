@@ -1,4 +1,5 @@
 
+use log_write::EmptyWrite;
 use log_core::LogLockIO;
 use log_core::LogExtend;
 use log_core::LogStatic;
@@ -7,8 +8,6 @@ use log_core::LogBase;
 use log_write::LogWrite;
 use DefLogShape;
 use log_lock::LogSafeLock;
-use log_addition::union::LogUnionConst;
-use log_addition::empty::empty_write::EmptyWrite;
 use log_addition::empty::LogEmptyConst;
 use std::io::StderrLock;
 use std::io::StdoutLock;
@@ -21,10 +20,9 @@ use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
-use log_lock::LogSafeWriteNFLock;
 use log_lock::LogSafeWriteLock;
 
-
+///Log system with two outgoing flows. Default logging system.
 #[derive(Debug)]
 pub struct LogDefault<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> {
 	_b:	PhantomData<W>,
@@ -76,7 +74,7 @@ impl<'a> LogEmptyConst for LogDefault<'a, DefLogShape, DefLogPanic, EmptyWrite, 
 	}
 }
 
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a + Write, EL: 'a +  Write> LogBase<'a> for LogDefault<'a, W, P, O, E, OL, EL> {
+impl<'a, W: LogShape + 'a, P: LogPanic<W> + 'a, O: LogWrite<'a, OL> + 'a, E: LogWrite<'a, EL>, OL: 'a + Write, EL: 'a +  Write> LogBase<'a> for LogDefault<'a, W, P, O, E, OL, EL> {
 	fn warning<'l>(&'a self, args: Arguments) -> io::Result<()> {
 		W::warning(self.out.lock(), args)
 	}
@@ -121,25 +119,16 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, 
 }
 	
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a + Write , EL: 'a +  Write> LogLockIO<'a> for LogDefault<'a, W, P, O, E, OL, EL> {
-	fn lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.out.lock())
-	}
-	
-	fn lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.err.lock())
-	}
-
 	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteNFLock::boxed(self.out.lock())
+		LogSafeWriteLock::boxed(self.out.lock())
 	}
 
 	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteNFLock::boxed(self.err.lock())
+		LogSafeWriteLock::boxed(self.err.lock())
 	}
 }
 
 
 
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogUnionConst<'a> for LogDefault<'a, W, P, O, E, OL, EL> {}
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogStatic<'a> for LogDefault<'a, W, P, O, E, OL, EL> {}
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogExtend<'a> for LogDefault<'a, W, P, O, E, OL, EL> {}
+impl<'a, W: LogShape + 'a, P: LogPanic<W> + 'a, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogStatic<'a> for LogDefault<'a, W, P, O, E, OL, EL> {}
+impl<'a, W: LogShape + 'a, P: LogPanic<W> + 'a, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a +  Write, EL: 'a +  Write> LogExtend<'a> for LogDefault<'a, W, P, O, E, OL, EL> {}

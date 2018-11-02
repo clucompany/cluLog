@@ -21,16 +21,9 @@ pub trait LogUnionConst<'a> {
      }
 }
 
-/*
-impl<'a, A: LogUnionConst<'a>> LogUnionConst<'a> for &'a A {
-     #[inline(always)]
-     fn union<P: LogPanic, B: Sized + LogExtend<'a>>(self, b: B) -> LogUnion<'a, Self, B, P> where Self: Sized + LogExtend<'a> {
-          (**self).union(b)
-     }
-     #[inline(always)]
-     fn default_union<B: Sized + LogExtend<'a>>(self, b: B) -> LogUnion<'a, Self, B, DefLogPanic> where Self: Sized + LogExtend<'a> {
-          (**self).default_union(b)
-     }
+
+impl<'a, T: LogExtend<'a>> LogUnionConst<'a> for T {
+
 }
-*/
+
 

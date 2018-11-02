@@ -3,6 +3,8 @@
 extern crate cluLog;
 
 
+use std::io::Write;
+
 fn main() {
 	init_clulog!(none);
 	
