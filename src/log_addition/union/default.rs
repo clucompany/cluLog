@@ -13,7 +13,6 @@ use log_addition::empty::LogEmptyConst;
 use log_addition::empty::total::LogTotalEmpty;
 use std::marker::PhantomData;
 use std::io;
-use log_addition::union::LogUnionConst;
 use log_lock::UnionLock;
 
 pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);

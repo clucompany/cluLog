@@ -6,7 +6,6 @@ use log_core::LogExtend;
 use log_core::LogLockIO;
 use log_core::LogFlush;
 use log_lock::LogSafeLock;
-use log_addition::union::LogUnionConst;
 use std::fmt::Arguments;
 use std::io;
 use log_addition::empty::LogEmptyConst;
@@ -17,7 +16,7 @@ pub struct LogTotalEmpty;
 
 impl LogTotalEmpty {
 	#[inline(always)]
-	pub const fn new() -> Self {
+	pub fn new() -> Self {
 		LogTotalEmpty
 	}
 }

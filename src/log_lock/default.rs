@@ -5,7 +5,6 @@ use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::io::Write;
-use std::io;
 
 ///Blocking threads with automatic cleaning
 #[allow(non_camel_case_types)]
