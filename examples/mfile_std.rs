@@ -1,10 +1,10 @@
 #[macro_use]
 extern crate cluLog;
 use std::io::Write;
-use cluLog::log_shape::DefNoColorShape;
 use cluLog::DefLogPanic;
 use cluLog::log_addition::union::LogUnionConst;
 use std::io;
+use cluLog::DefLogShape;
 
 fn main() {
      {
@@ -13,7 +13,7 @@ fn main() {
           ).default_union(
                cluLog::LogDefault::default()
           ).default_union(
-               cluLog::LogDefault::<DefNoColorShape, DefLogPanic, _, _, _, _>::new(io::stdout(), io::stderr())
+               cluLog::LogDefault::<DefLogShape, DefLogPanic, _, _, _, _>::new(io::stdout(), io::stderr())
           );
 
           cluLog::set_boxed_logger({

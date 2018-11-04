@@ -13,7 +13,8 @@ pub mod log_core;
 
 mod macros;
 
-pub use self::log::*;
+pub use self::log::LogDefault;
+pub use self::log::LogOneDefault;
 use log_core::LogStatic;
 use log_addition::empty::LogTotalEmpty;
 use std::sync::{Once, ONCE_INIT};
@@ -26,7 +27,7 @@ pub use self::log_panic::DefLogPanic;
 pub type DefLogColorShape = self::log_shape::DefLogColorShape;
 pub type DefLogShape = self::log_shape::DefLogShape;
 pub type DefLogPanic = self::log_panic::DefLogPanic;
-
+pub type DefLog<'a> = self::log::DefLog<'a>;
 
 
 static mut LOGGER: &'static LogStatic<'static> = &LogTotalEmpty;
@@ -81,17 +82,17 @@ pub fn as_log() -> &'static LogStatic<'static> {
 #[macro_export]
 macro_rules! init_clulog {
 	(null) => {
-		use $crate::log_addition::empty::total::LogTotalEmpty;
+		use $crate::log_addition::empty::LogTotalEmpty;
 
 		$crate::set_slice_logger(&LogTotalEmpty)
 	};
 	
 	(none) => {
-		use $crate::log_addition::empty::default::LogEmpty;
+		use $crate::log_addition::empty::LogEmpty;
 		$crate::set_logger(LogEmpty::default())
 	};
 	(total_none) => {
-		use $crate::log_addition::empty::total::LogTotalEmpty;
+		use $crate::log_addition::empty::LogTotalEmpty;
 
 		$crate::set_slice_logger(&LogTotalEmpty);
 	};

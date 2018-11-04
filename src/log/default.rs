@@ -19,7 +19,9 @@ use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
-use log_write::WriteGuard;
+
+
+pub (crate) type DefLog<'a> = LogDefault<'a, DefLogShape, DefLogPanic, Stdout, Stderr, StdoutLock<'a>, StderrLock<'a>>;
 
 
 ///Log system with two outgoing flows. Default logging system.

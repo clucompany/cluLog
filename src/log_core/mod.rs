@@ -1,12 +1,12 @@
 
 
 mod flush;
-mod base_out;
+mod out;
 mod lock;
 
 use log_addition::union::LogUnionConst;
 pub use self::flush::*;
-pub use self::base_out::*;
+pub use self::out::*;
 pub use self::lock::*;
 
 

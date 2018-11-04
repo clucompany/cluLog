@@ -1,13 +1,13 @@
 
 #[macro_use]
 extern crate cluLog;
-use cluLog::DefColorShape;
 use cluLog::DefLogPanic;
+use cluLog::DefLogColorShape;
 
 fn main() {
      {
           //Colored mode!
-          match cluLog::log_addition::file::open_path::<DefColorShape, DefLogPanic, _>("/tmp/test") {
+          match cluLog::log_addition::file::open_path::<DefLogColorShape, DefLogPanic, _>("/tmp/test") {
                Ok(file_log) => {cluLog::set_logger(file_log);} ,
                Err(e) => {
                     panic!("Err open file output, {:?}", e);

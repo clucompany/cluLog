@@ -18,6 +18,8 @@ use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
 
+#[allow(dead_code)]
+pub type DefOneLog<'a> = LogOneDefault<'a, DefLogShape, DefLogPanic, Stdout, StdoutLock<'a>>;
 
 ///Log system with one out stream.
 #[derive(Debug)]

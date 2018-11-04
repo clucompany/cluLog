@@ -1,8 +1,9 @@
 
+
 use log_shape::LogShape;
 use std::io::Write;
 use std::fmt::Arguments;
-use ::std::io;
+use std::io;
 
 use clucolor::colors::*;
 use clucolor::cluColor;
@@ -69,14 +70,18 @@ impl LogShape for cluColorShape {
 	}	
 	
 	#[inline(always)]
-	fn print<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
-		write.write_fmt(display)
+	fn print<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {
+		//write.write_fmt(display)
+		writen_color!(write, PrintColor, "{}", display)
 	}
 	//[OUT] - unknown 
 	
 	#[inline(always)]
-	fn eprint<'a, W: Write>(mut write: W, display: Arguments<'a>) -> io::Result<()> {
-		write.write_fmt(display)
+	fn eprint<'a, W: Write>(write: W, display: Arguments<'a>) -> io::Result<()> {
+		//write.write_fmt(display)
+		writen_color!(write, EPrintColor, "{}", display)
 	}
 	//[EOUT] - unknown 
 }
+
+
