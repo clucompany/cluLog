@@ -17,9 +17,9 @@ fn main() {
           );
 
           cluLog::set_boxed_logger({
-               match cluLog::log_addition::file::default_create_file("/tmp/clulog.out") {
+               match cluLog::log_addition::file::default_create_path("/tmp/clulog.out") {
                     Ok(file0) => {
-                         match cluLog::log_addition::file::default_create_file("/tmp/clulog2.out") {
+                         match cluLog::log_addition::file::default_create_path("/tmp/clulog2.out") {
                               Ok(file2) => {
                                    union.default_union(file0).default_union(file2).to_box()
                                    //динамический размер

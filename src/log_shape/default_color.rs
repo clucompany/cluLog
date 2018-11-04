@@ -18,6 +18,7 @@ type UnkColor = 	BrightBlue;
 type PrintColor = 	BrightWhite;
 type EPrintColor = 	BrightWhite;
 
+#[allow(non_camel_case_types)]
 #[derive(Debug)]
 pub enum cluColorShape {}
 
@@ -59,7 +60,7 @@ impl LogShape for cluColorShape {
 			"{}{} {}\n", 
 			
 			color_args!(bright_yellow, "[TRACE]"), 
-			color_args!(bright_blue, bold, format_args!("[{}][{}:{}]", file, line, pos)), 
+			color_args!(bright_blue, bold, format_args!("[{}:{}:{}]", file, line, pos)), 
 			color_args!(bright_white, display) 
 
 		))

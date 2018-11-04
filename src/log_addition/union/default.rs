@@ -1,19 +1,20 @@
 
 //!Combining several log systems into one.
 
+use std::io::Write;
 use log_core::LogStatic;
 use log_core::LogLockIO;
 use log_core::LogBase;
 use log_core::LogFlush;
 use log_core::LogExtend;
-use log_lock::LogSafeLock;
 use log_panic::LogPanic;
 use std::fmt::Arguments;
 use log_addition::empty::LogEmptyConst;
-use log_addition::empty::total::LogTotalEmpty;
+use log_addition::empty::LogTotalEmpty;
 use std::marker::PhantomData;
 use std::io;
-use log_lock::UnionLock;
+use log_write::UnionWrite;
+
 
 pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 
@@ -97,7 +98,7 @@ impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for Lo
 	}
 	
 	fn panic<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		Panic::panic(UnionLock::new(self.0.lock_err(), self.1.lock_err()), args)
+		Panic::panic(UnionWrite::new(self.0.lock_err(), self.1.lock_err()), args)
 	}
 	
      #[inline(always)]
@@ -138,13 +139,13 @@ impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for Lo
 	
 impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		UnionLock::boxed(self.0.lock_out(), self.1.lock_out())
+	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+		UnionWrite::boxed(self.0.lock_out(), self.1.lock_out())
 	}
 
      #[inline(always)]
-	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		UnionLock::boxed(self.0.lock_err(), self.1.lock_err())
+	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+		UnionWrite::boxed(self.0.lock_err(), self.1.lock_err())
 	}
 }
 

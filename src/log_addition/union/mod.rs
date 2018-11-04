@@ -4,9 +4,9 @@
 use log_core::LogExtend;
 use DefLogPanic;
 use log_panic::LogPanic;
-use log_addition::union::default::LogUnion;
 
-pub mod default;
+mod default;
+pub use self::default::*;
 //pub mod lock;
 
 ///The constructor of empty structures

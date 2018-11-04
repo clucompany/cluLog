@@ -7,7 +7,7 @@ mod log;
 pub mod log_panic;
 pub mod log_shape;
 pub mod log_addition;
-pub mod log_lock;
+//pub mod log_lock;
 pub mod log_write;
 pub mod log_core;
 
@@ -15,12 +15,18 @@ mod macros;
 
 pub use self::log::*;
 use log_core::LogStatic;
-use log_addition::empty::total::LogTotalEmpty;
+use log_addition::empty::LogTotalEmpty;
 use std::sync::{Once, ONCE_INIT};
 
+/*
+pub use self::log_shape::DefLogColorShape;
+pub use self::log_shape::DefLogShape;
+pub use self::log_panic::DefLogPanic;
+*/
+pub type DefLogColorShape = self::log_shape::DefLogColorShape;
+pub type DefLogShape = self::log_shape::DefLogShape;
+pub type DefLogPanic = self::log_panic::DefLogPanic;
 
-pub type DefLogShape = 			self::log_shape::			DefLogShape;
-pub type DefLogPanic = 			self::log_panic::			DefaultPanic;
 
 
 static mut LOGGER: &'static LogStatic<'static> = &LogTotalEmpty;
@@ -40,7 +46,7 @@ pub fn set_slice_logger(log: &'static LogStatic<'static>) -> bool {
 }
 
 #[inline(always)]
-pub fn set_logger<S: 'static + LogStatic<'static>>(log: S) -> bool {
+pub fn set_logger<S: LogStatic<'static> + 'static>(log: S) -> bool {
 	let mut is_set = false;
 	LOGGER_INIT.call_once(move || {
 		unsafe {

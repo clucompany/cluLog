@@ -10,8 +10,7 @@ use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
 
-pub type DefColorShape = self::default_color::cluColorShape;
-pub type DefNoColorShape = self::default::cluShape;
+pub type DefLogColorShape = self::default_color::cluColorShape;
 pub type DefLogShape = self::default_color::cluColorShape;
 
 

@@ -1,28 +1,41 @@
 
 
 use log_write::EmptyWrite;
-use log_lock::LogSafeLock;
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::io::Write;
 use std::io;
 
-#[allow(non_camel_case_types)]
-pub struct UnionLock<'a, W: Write + 'a, W2: Write + 'a>(W,W2, PhantomData<&'a ()>);
 
-impl<'a, W: Write + 'a, W2: Write + 'a> UnionLock<'a, W, W2> {
+pub trait UnionWriteConst<'a>: Write + 'a {
+     #[inline]
+     fn union<B: UnionWriteConst<'a> + Sized + 'a>(self, b: B) -> UnionWrite<'a, Self, B> where Self: Sized { 
+          UnionWrite::new(self, b)
+     }
+}
+
+impl<'a, T: Write + 'a> UnionWriteConst<'a> for T {}
+
+
+
+
+
+#[allow(non_camel_case_types)]
+pub struct UnionWrite<'a, W: Write + 'a, W2: Write + 'a>(W,W2, PhantomData<&'a ()>);
+
+impl<'a, W: Write + 'a, W2: Write + 'a> UnionWrite<'a, W, W2> {
 	#[inline]
 	pub fn new(out: W, out2: W2) -> Self {
-		UnionLock(out, out2, PhantomData)
+		UnionWrite(out, out2, PhantomData)
 	}
      #[inline]
-	pub fn boxed(out: W, out2: W2) -> Box<LogSafeLock<'a> + 'a>{
+	pub fn boxed(out: W, out2: W2) -> Box<Write + 'a>{
 		Box::new(Self::new(out, out2))
 	}
 }
 
-impl<'a> LogEmptyConst for UnionLock<'a, EmptyWrite, EmptyWrite> {
+impl<'a> LogEmptyConst for UnionWrite<'a, EmptyWrite, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
 		Self::new(EmptyWrite, EmptyWrite)
@@ -31,13 +44,13 @@ impl<'a> LogEmptyConst for UnionLock<'a, EmptyWrite, EmptyWrite> {
 
 
 
-impl<'a, W: Write + 'a, W2: Write + 'a> Debug for UnionLock<'a, W, W2> {
+impl<'a, W: Write + 'a, W2: Write + 'a> Debug for UnionWrite<'a, W, W2> {
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		f.pad("UnionLock { .. }")
+		f.pad("UnionWrite { .. }")
 	}
 }
 /*
-impl<'a, W: Write + 'a, W2: Write + 'a> Drop for UnionLock<'a, W, W2> {
+impl<'a, W: Write + 'a, W2: Write + 'a> Drop for UnionWrite<'a, W, W2> {
 	#[inline(always)]
 	fn drop(&mut self) {
 		let _e = self.flush();
@@ -45,7 +58,7 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Drop for UnionLock<'a, W, W2> {
 }
 */
 
-impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionLock<'a, W, W2> {
+impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionWrite<'a, W, W2> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           match self.0.write(buf) {
@@ -89,10 +102,10 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionLock<'a, W, W2> {
 	}
 }
 
-//impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionLock<'a, W, W2> {}
+//impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionWrite<'a, W, W2> {}
 
 
-impl<'a, W: Write + 'a + Clone, W2: Write + 'a + Clone> Clone for UnionLock<'a, W, W2> {
+impl<'a, W: Write + 'a + Clone, W2: Write + 'a + Clone> Clone for UnionWrite<'a, W, W2> {
 
      fn clone(&self) -> Self {
           Self::new(self.0.clone(), self.1.clone())

@@ -7,7 +7,6 @@ use log_core::LogFlush;
 use log_core::LogBase;
 use log_write::LogWrite;
 use DefLogShape;
-use log_lock::LogSafeLock;
 use log_addition::empty::LogEmptyConst;
 use std::io::StderrLock;
 use std::io::StdoutLock;
@@ -20,7 +19,8 @@ use log_panic::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
-use log_lock::LogSafeWriteLock;
+use log_write::WriteGuard;
+
 
 ///Log system with two outgoing flows. Default logging system.
 #[derive(Debug)]
@@ -119,12 +119,14 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, 
 }
 	
 impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL>, E: LogWrite<'a, EL>, OL: 'a + Write , EL: 'a +  Write> LogLockIO<'a> for LogDefault<'a, W, P, O, E, OL, EL> {
-	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.out.lock())
+	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+		//WriteGuard::boxed(self.out.lock())
+		Box::new(self.out.lock())
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.err.lock())
+	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+		//WriteGuard::boxed(self.err.lock())
+		Box::new(self.err.lock())
 	}
 }
 

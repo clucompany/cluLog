@@ -8,7 +8,7 @@ fn main() {
 	
      {
           //Colored mode!
-          match cluLog::log_addition::file::default_create_file("/tmp/test") {
+          match cluLog::log_addition::file::default_open_path("/tmp/test") {
                Ok(file_log) => {cluLog::set_logger(file_log);},
                Err(e) => {
                     panic!("Err open file output, {:?}", e);

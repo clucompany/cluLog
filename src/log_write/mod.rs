@@ -3,15 +3,20 @@
 mod std;
 mod empty;
 mod mutex;
+mod union;
+mod flush;
 
 
 pub use self::std::*;
 pub use self::empty::*;
 pub use self::mutex::*;
+pub use self::union::*;
+pub use self::flush::*;
 
 use std::io::Write;
 use std::io;
 
+///The trait extends Write and allows to use in systems of logging.
 pub trait LogWrite<'a, W: Write + 'a>: Write + 'a {
      ///Blocking the output stream
 	fn lock(&'a self) -> W;

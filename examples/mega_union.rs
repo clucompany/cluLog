@@ -14,7 +14,7 @@ fn main() {
           );
 
           cluLog::set_boxed_logger({
-               match cluLog::log_addition::file::default_create_file("/tmp/clulog.out") {
+               match cluLog::log_addition::file::default_create_path("/tmp/clulog.out") {
                     Ok(file) => {
                          union.default_union(file).to_box()
                     },

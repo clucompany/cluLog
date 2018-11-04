@@ -5,7 +5,6 @@ use log_core::LogFlush;
 use log_core::LogStatic;
 use log_core::LogBase;
 use log_write::LogWrite;
-use log_lock::LogSafeLock;
 use std::io::Stderr;
 use std::io::Stdout;
 use std::marker::PhantomData;
@@ -14,8 +13,6 @@ use std::io::StdoutLock;
 use std::fmt::Arguments;
 use std::io;
 use std::io::Write;
-use log_lock::LogSafeWriteLock;
-
 
 #[derive(Debug)]
 pub struct LogEmpty<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>>(W, W2, PhantomData<&'a ()>);
@@ -89,12 +86,14 @@ impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogF
 
 
 impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
-	fn no_flush_lock_out(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.0.lock())
+	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+		//WriteGuard::boxed(self.0.lock())
+		Box::new(self.0.lock())
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<LogSafeLock<'a> + 'a> {
-		LogSafeWriteLock::boxed(self.0.lock())
+	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+		//WriteGuard::boxed(self.0.lock())
+		Box::new(self.0.lock())
 	}
 }
 

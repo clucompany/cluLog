@@ -10,7 +10,7 @@ use log_shape::LogShape;
 use std::io;
 use log_shape::DefLogShape;
 
-pub type DefaultPanic = self::default::DefaultPanic;
+pub type DefLogPanic = self::default::DefaultPanic;
 
 
 pub trait LogPanic<Shape: LogShape = DefLogShape>: Debug {

@@ -104,10 +104,10 @@ macro_rules! lock {
 #[macro_export]
 macro_rules! lock_out {
 	() => {
-		let _e = $crate::as_log().lock_out();
+		$crate::as_log().lock_out()
 	};
 	(no_flush) => {
-		let _e = $crate::as_log().no_flush_lock_out();
+		$crate::as_log().no_flush_lock_out()
 	};
 }
 
@@ -115,10 +115,10 @@ macro_rules! lock_out {
 #[macro_export]
 macro_rules! lock_err {
 	() => {
-		let _e = $crate::as_log().lock_err();
+		$crate::as_log().lock_err()
 	};
 	(no_flush) => {
-		let _e = $crate::as_log().no_flush_lock_err();
+		$crate::as_log().no_flush_lock_err()
 	};
 }
 

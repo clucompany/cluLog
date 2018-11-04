@@ -42,7 +42,7 @@ impl LogShape for cluShape {
 	
 	#[inline(always)]
 	fn trace<'s, W: Write>(mut write: W, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()> {
-		write.write_fmt(	format_args!("[TRACE][{}][{}:{}] {}\n", file, line, pos, args)	)
+		write.write_fmt(	format_args!("[TRACE][{}:{}:{}] {}\n", file, line, pos, args)	)
 	}
 	
 	#[inline(always)]

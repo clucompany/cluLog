@@ -1,6 +1,5 @@
 
 use log_write::EmptyWrite;
-use log_lock::LogSafeLock;
 use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
 use std::marker::PhantomData;
@@ -17,7 +16,7 @@ impl<'a, W: Write + 'a> LogSafeWriteLock<'a, W> {
 	}
 
 	#[inline]
-	pub fn boxed(out: W) -> Box<LogSafeLock<'a> + 'a>{
+	pub fn boxed(out: W) -> Box<Write + 'a>{
 		Box::new(Self::new(out))
 	}
 }
