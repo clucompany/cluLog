@@ -7,7 +7,7 @@ use log_core::LogLockIO;
 use log_core::LogBase;
 use log_core::LogFlush;
 use log_core::LogExtend;
-use log_panic::LogPanic;
+use log_core::LogPanic;
 use std::fmt::Arguments;
 use log_addition::empty::LogEmptyConst;
 use log_addition::empty::LogTotalEmpty;
@@ -53,21 +53,25 @@ impl<'a, Panic: LogPanic> LogEmptyConst for LogUnion<'a, LogTotalEmpty, LogTotal
 
 
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush for LogUnion<'a, A, B, Panic> {
+impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-     fn flush_out(&self) -> io::Result<()> {
-          if let Err(e) = self.0.flush_out() {
+     fn flush_out(&'a self) -> io::Result<()> {
+          let e = self.0.flush_out();
+          let e2 = self.1.flush_out();
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.flush_out()
+          e2
      }
 
      #[inline(always)]
-	fn flush_err(&self) -> io::Result<()> {
-          if let Err(e) = self.0.flush_err() {
+	fn flush_err(&'a self) -> io::Result<()> {
+          let e = self.0.flush_err();
+          let e2 = self.1.flush_err();
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.flush_err()
+          e2
      }
 }
 
@@ -75,26 +79,32 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush
 impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
 	fn warning<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.warning(args) {
+		let e = self.0.warning(args);
+          let e2 = self.1.warning(args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.warning(args)
+          e2
 	}
 	
      #[inline(always)]
 	fn info<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.info(args) {
+		let e = self.0.info(args);
+          let e2 = self.1.info(args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.info(args)
+          e2
 	}
 	
      #[inline(always)]
 	fn error<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.error(args) {
+		let e = self.0.error(args);
+          let e2 = self.1.error(args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.error(args)
+          e2
 	}
 	
 	fn panic<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
@@ -103,34 +113,42 @@ impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for Lo
 	
      #[inline(always)]
 	fn unknown<'l>(&'a self, name: &'static str, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.unknown(name, args) {
+		let e = self.0.unknown(name, args);
+          let e2 = self.1.unknown(name, args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.unknown(name, args)
+          e2
 	}
 
      #[inline(always)]
 	fn trace<'l>(&'a self, line: u32, pos: u32, file: &'static str, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.trace(line, pos, file, args) {
+		let e = self.0.trace(line, pos, file, args);
+          let e2 = self.1.trace(line, pos, file, args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.trace(line, pos, file, args)
+          e2
 	}
 	
      #[inline(always)]
 	fn print<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.print(args) {
+          let e = self.0.print(args);
+          let e2 = self.1.print(args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.print(args)
+          e2
 	}
 	
      #[inline(always)]
 	fn eprint<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		if let Err(e) = self.0.eprint(args) {
+		let e = self.0.eprint(args);
+          let e2 = self.1.eprint(args);
+          if let Err(e) = e {
                return Err(e);
           }
-          self.1.eprint(args)
+          e2
 	}
 }
 
@@ -139,13 +157,13 @@ impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for Lo
 	
 impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
-	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
-		UnionWrite::boxed(self.0.lock_out(), self.1.lock_out())
+	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
+		UnionWrite::boxed(self.0.raw_lock_out(), self.1.raw_lock_out())
 	}
 
      #[inline(always)]
-	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
-		UnionWrite::boxed(self.0.lock_err(), self.1.lock_err())
+	fn raw_lock_err(&'a self) -> Box<Write + 'a> {
+		UnionWrite::boxed(self.0.raw_lock_out(), self.1.raw_lock_out())
 	}
 }
 
@@ -164,4 +182,4 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> From< (A
 
 //impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogUnionConst<'a> for LogUnion<'a, A, B, Panic> {}
 impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogExtend<'a> for LogUnion<'a, A, B, Panic> {}
-impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogStatic<'a> for LogUnion<'a, A, B, Panic> where Self: 'static {}
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogStatic<'a> for LogUnion<'a, A, B, Panic> {}

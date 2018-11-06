@@ -72,7 +72,7 @@ impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogB
 	}
 }
 
-impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogFlush for LogEmpty<'a, W, W2> {
+impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogFlush<'a> for LogEmpty<'a, W, W2> {
 	#[inline(always)]	
 	fn flush_out(&self) -> io::Result<()> {
 		Ok( () )
@@ -86,13 +86,11 @@ impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogF
 
 
 impl<'a, W: LogWrite<'a, StdoutLock<'a>>, W2: LogWrite<'a, StderrLock<'a>>> LogLockIO<'a> for LogEmpty<'a, W, W2> {
-	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
-		//WriteGuard::boxed(self.0.lock())
+	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
 		Box::new(self.0.lock())
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
-		//WriteGuard::boxed(self.0.lock())
+	fn raw_lock_err(&'a self) -> Box<Write + 'a> {
 		Box::new(self.0.lock())
 	}
 }

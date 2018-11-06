@@ -3,7 +3,7 @@
 
 use log_core::LogExtend;
 use DefLogPanic;
-use log_panic::LogPanic;
+use log_core::LogPanic;
 
 mod default;
 pub use self::default::*;

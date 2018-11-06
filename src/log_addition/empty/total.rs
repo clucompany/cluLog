@@ -64,24 +64,24 @@ impl<'a> LogBase<'a> for LogTotalEmpty {
 	}
 }
 
-impl LogFlush for LogTotalEmpty {
+impl<'a> LogFlush<'a> for LogTotalEmpty {
 	#[inline(always)]	
-	fn flush_out(&self) -> io::Result<()> {
+	fn flush_out(&'a self) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn flush_err(&self) -> io::Result<()> {
+	fn flush_err(&'a self) -> io::Result<()> {
 		Ok( () )
 	}
 }
 
 impl<'a> LogLockIO<'a> for LogTotalEmpty {
-	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
+	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
 		EmptyWrite::boxed()
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
+	fn raw_lock_err(&'a self) -> Box<Write + 'a> {
 		EmptyWrite::boxed()
 	}
 }

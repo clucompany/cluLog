@@ -52,15 +52,15 @@ impl<'a, T: 'a + Write> Write for MutexWrite<'a, T> {
      }
 }
 
-impl<'a, T: 'a + Write> LogWrite<'a, WriteGuard<'a, T>> for MutexWrite<'a, T> {
+impl<'a, T: 'a + Write> LogWrite<'a, GuardWrite<'a, T>> for MutexWrite<'a, T> {
      #[inline]
-     fn lock(&'a self) -> WriteGuard<'a, T> {
-          WriteGuard::guard(self._lock())
+     fn lock(&'a self) -> GuardWrite<'a, T> {
+          GuardWrite::guard(self._lock())
      }
-     #[inline(always)]
-     fn un_flush(&self) -> io::Result<()> {
+     /*#[inline(always)]
+     fn flush(&self) -> io::Result<()> {
           self._lock().flush()
-     }
+     }*/
 }
 
 
@@ -76,12 +76,12 @@ impl<'a, T: 'a + Write + Clone> Clone for MutexWrite<'a, T> {
 
 
 #[derive(Debug)]
-pub struct WriteGuard<'a, T: Write + 'a>(MutexGuard<'a, T>, PhantomData<&'a ()>);
+pub struct GuardWrite<'a, T: Write + 'a>(MutexGuard<'a, T>, PhantomData<&'a ()>);
 
-impl<'a, T: Write + 'a> WriteGuard<'a, T> {
+impl<'a, T: Write + 'a> GuardWrite<'a, T> {
      #[inline]
      pub fn guard(t: MutexGuard<'a, T>) -> Self {
-          WriteGuard(t, PhantomData)
+          GuardWrite(t, PhantomData)
      }
 
      #[inline]
@@ -90,7 +90,7 @@ impl<'a, T: Write + 'a> WriteGuard<'a, T> {
      }
 }
 
-impl<'a, T: Write + 'a> Write for WriteGuard<'a, T> {
+impl<'a, T: Write + 'a> Write for GuardWrite<'a, T> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           self.0.write(buf)

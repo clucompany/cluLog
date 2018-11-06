@@ -18,5 +18,7 @@ fn main() {
           }
           let _e = lock.write(b"\n");
      }
+     let mut lock = lock_out!();
+     let _e = lock.write(b"S\n");
 }
 

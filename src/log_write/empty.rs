@@ -43,16 +43,17 @@ impl Write for EmptyWrite {
 
 
 
-impl<'a> LogWrite<'a, EmptyWrite> for EmptyWrite {
+impl<'a> LogWrite<'a, EmptyWrite> for EmptyWrite {     
      #[inline(always)]
      fn lock(&'a self) -> EmptyWrite {
           EmptyWrite
      }
 
-     #[inline(always)]
-     fn un_flush(&self) -> io::Result<()> {
+     /*#[inline(always)]
+     fn flush(&self) -> io::Result<()> {
           Ok( () )
      }
+     */
 }
 /*
 impl<'a> LogWrite<'a, LogSafeWriteLock<'a, EmptyWrite>> for EmptyWrite {

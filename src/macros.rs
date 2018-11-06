@@ -107,7 +107,7 @@ macro_rules! lock_out {
 		$crate::as_log().lock_out()
 	};
 	(no_flush) => {
-		$crate::as_log().no_flush_lock_out()
+		$crate::as_log().raw_lock_out()
 	};
 }
 
@@ -118,7 +118,7 @@ macro_rules! lock_err {
 		$crate::as_log().lock_err()
 	};
 	(no_flush) => {
-		$crate::as_log().no_flush_lock_err()
+		$crate::as_log().raw_lock_err()
 	};
 }
 

@@ -1,6 +1,6 @@
 
 
-use log_shape::LogShape;
+use log_core::LogShape;
 use std::io::Write;
 use std::fmt::Arguments;
 use std::io;

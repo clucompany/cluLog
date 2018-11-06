@@ -5,6 +5,7 @@ use log_core::LogStatic;
 use log_core::LogLockIO;
 use log_core::LogBase;
 use log_core::LogFlush;
+use log_core::LogShape;
 use log_write::LogWrite;
 use DefLogShape;
 use log_addition::empty::LogEmptyConst;
@@ -12,8 +13,7 @@ use std::io::StdoutLock;
 use std::io::Stdout;
 use DefLogPanic;
 use std::marker::PhantomData;
-use log_shape::LogShape;
-use log_panic::LogPanic;
+use log_core::LogPanic;
 use std::fmt::Arguments;
 use std::io::Write;
 use std::io;
@@ -23,11 +23,11 @@ pub type DefOneLog<'a> = LogOneDefault<'a, DefLogShape, DefLogPanic, Stdout, Std
 
 ///Log system with one out stream.
 #[derive(Debug)]
-pub struct LogOneDefault<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> {
-	_b:	PhantomData<W>,
+pub struct LogOneDefault<'a, W: LogShape + 'a, P: LogPanic + 'a, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> {
+	_w:	PhantomData<W>,
 	_p:	PhantomData<P>,	
 	_ln: PhantomData<&'a ()>,
-	_pp: PhantomData<OL>,
+	_ol: PhantomData<OL>,
 	
 	out: O,
 }
@@ -48,14 +48,14 @@ impl<'a> LogOneDefault<'a, DefLogShape, DefLogPanic, Stdout, StdoutLock<'a>> {
 
 
 
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogOneDefault<'a, W, P, O, OL> {
+impl<'a, W: LogShape + 'a, P: LogPanic + 'a, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> LogOneDefault<'a, W, P, O, OL> {
 	#[inline]
 	pub fn new(out: O) -> Self {		
 		Self {
-			_b:	PhantomData,
+			_w:	PhantomData,
 			_p:	PhantomData,
 			_ln: PhantomData,
-			_pp: PhantomData,
+			_ol: PhantomData,
 			
 			out: out,
 		}
@@ -69,7 +69,7 @@ impl<'a> LogEmptyConst for LogOneDefault<'a, DefLogShape, DefLogPanic, EmptyWrit
 	}
 }
 
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Write> LogBase<'a> for LogOneDefault<'a, W, P, O, OL> {
+impl<'a, W: LogShape + 'a, P: LogPanic + 'a, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> LogBase<'a> for LogOneDefault<'a, W, P, O, OL> {
 	fn warning<'l>(&'a self, args: Arguments) -> io::Result<()> {
 		W::warning(self.out.lock(), args)
 	}
@@ -83,7 +83,14 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Writ
 	}
 	
 	fn panic<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
-		P::panic(self.out.lock(), args)
+		let mut lock = self.out.lock();
+		let e = W::panic(&mut lock, args);
+		let e2 = P::panic(lock, args);
+		
+		if let Err(e) = e {
+			return Err(e);
+		}
+		e2
 	}
 	
 	fn unknown<'l>(&'a self, name: &'static str, args: Arguments<'l>) -> io::Result<()> {
@@ -103,28 +110,28 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Writ
 	}
 }
 
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Write> LogFlush for LogOneDefault<'a, W, P, O, OL> {
-	fn flush_out(&self) -> io::Result<()> {
-		self.out.un_flush()
+impl<'a, W: LogShape + 'a, P: LogPanic + 'a, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> LogFlush<'a> for LogOneDefault<'a, W, P, O, OL> {
+	fn flush_out(&'a self) -> io::Result<()> {
+		self.out.lock().flush()
 	}
 	
-	fn flush_err(&self) -> io::Result<()> {
-		self.out.un_flush()
+	fn flush_err(&'a self) -> io::Result<()> {
+		self.out.lock().flush()
 	}
 	#[inline]
-	fn flush(&self) -> io::Result<()> {
+	fn flush(&'a self) -> io::Result<()> {
 		self.flush_out()
 	}
 }
 	
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Write> LogLockIO<'a> for LogOneDefault<'a, W, P, O, OL> {
-	fn no_flush_lock_out(&'a self) -> Box<Write + 'a> {
-		//WriteGuard::boxed(self.out.lock())
+impl<'a, W: LogShape, P: LogPanic, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> LogLockIO<'a> for LogOneDefault<'a, W, P, O, OL> {
+	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
+		//GuardWrite::boxed(self.out.lock())
 		Box::new(self.out.lock())
 	}
 
-	fn no_flush_lock_err(&'a self) -> Box<Write + 'a> {
-		//WriteGuard::boxed(self.out.lock())
+	fn raw_lock_err(&'a self) -> Box<Write + 'a> {
+		//GuardWrite::boxed(self.out.lock())
 		Box::new(self.out.lock())
 	}
 }
@@ -132,5 +139,5 @@ impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a + Writ
 
 
 //impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogUnionConst<'a> for LogOneDefault<'a, W, P, O, OL> {}
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogStatic<'a> for LogOneDefault<'a, W, P, O, OL> {}
-impl<'a, W: LogShape, P: LogPanic<W>, O: LogWrite<'a, OL> + Write, OL: 'a +  Write> LogExtend<'a> for LogOneDefault<'a, W, P, O, OL> {}
+impl<'a, W: LogShape + 'a, P: LogPanic + 'a, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> LogStatic<'a> for LogOneDefault<'a, W, P, O, OL> {}
+impl<'a, W: LogShape + 'a, P: LogPanic + 'a, O: LogWrite<'a, OL> + 'a, OL: Write + 'a> LogExtend<'a> for LogOneDefault<'a, W, P, O, OL> {}
