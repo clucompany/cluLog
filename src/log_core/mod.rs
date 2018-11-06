@@ -25,7 +25,7 @@ impl<'a, A: LogStatic<'a>> LogStatic<'a> for &'a mut A {}
 
 
 ///Empty implementation allows you to fully manipulate the current system of journals
-pub trait LogExtend<'a>: LogBase<'a> + LogLockIO<'a> + LogFlush<'a> + LogUnionConst<'a> /*+ LogEmptyConst*/ {
+pub trait LogExtend<'a>: LogBase<'a> + LogLockIO<'a> + LogFlush<'a> + LogUnionConst /*+ LogEmptyConst*/ {
 
 }
 
@@ -38,10 +38,7 @@ impl<'a, A: LogExtend<'a>> LogExtend<'a> for &'a mut A {}
 
 pub trait Log<'a>: LogStatic<'a> + LogExtend<'a> {}
 
-
-impl<'a, A: LogStatic<'a> + LogExtend<'a>> Log<'a> for A {
-     
-}
+impl<'a, A: LogStatic<'a> + LogExtend<'a>> Log<'a> for A { }
 
 /*
 impl<'a, A: Log<'a>> Log<'a> for &'a A {}

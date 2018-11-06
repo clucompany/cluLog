@@ -16,9 +16,9 @@ use std::io;
 use log_write::UnionWrite;
 
 
-pub struct LogUnion<'a, A: 'a + LogExtend<'a> + Sized, B: 'a + LogExtend<'a> + Sized, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
+pub struct LogUnion<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic>(A, B, PhantomData<&'a ()>, PhantomData<Panic>);
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnion<'a, A, B, Panic> {
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogUnion<'a, A, B, Panic> {
      #[inline]
      pub fn new(a: A, b: B) -> Self {
           LogUnion(
@@ -35,7 +35,7 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogUnion
      }
 }
 
-impl<'a, A: 'a + LogExtend<'a> + Clone, B: 'a + LogExtend<'a> + Clone, Panic: LogPanic> Clone for LogUnion<'a, A, B, Panic> {
+impl<'a, A: LogExtend<'a> + Clone, B: LogExtend<'a> + Clone, Panic: LogPanic> Clone for LogUnion<'a, A, B, Panic> {
      fn clone(&self) -> Self {
           LogUnion::new(self.0.clone(), self.1.clone())
      }
@@ -53,7 +53,7 @@ impl<'a, Panic: LogPanic> LogEmptyConst for LogUnion<'a, LogTotalEmpty, LogTotal
 
 
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogFlush<'a> for LogUnion<'a, A, B, Panic> {
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogFlush<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
      fn flush_out(&'a self) -> io::Result<()> {
           let e = self.0.flush_out();
@@ -155,7 +155,7 @@ impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogBase<'a> for Lo
 
 
 	
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> LogLockIO<'a> for LogUnion<'a, A, B, Panic> {
      #[inline(always)]
 	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
 		UnionWrite::boxed(self.0.raw_lock_out(), self.1.raw_lock_out())
@@ -172,7 +172,7 @@ impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> LogLockI
 
 
 
-impl<'a, A: 'a + LogExtend<'a>, B: 'a + LogExtend<'a>, Panic: LogPanic> From< (A, B) > for LogUnion<'a, A, B, Panic> {
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>, Panic: LogPanic> From< (A, B) > for LogUnion<'a, A, B, Panic> {
      #[inline]
      fn from((a, b): (A, B)) -> Self {
           Self::new(a, b)

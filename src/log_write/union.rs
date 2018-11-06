@@ -8,34 +8,34 @@ use std::io::Write;
 use std::io;
 
 
-pub trait UnionWriteConst<'a>: Write + 'a {
+pub trait UnionWriteConst: Write {
      #[inline]
-     fn union<B: UnionWriteConst<'a> + Sized + 'a>(self, b: B) -> UnionWrite<'a, Self, B> where Self: Sized { 
+     fn union<B: UnionWriteConst>(self, b: B) -> UnionWrite<Self, B> where Self: Sized { 
           UnionWrite::new(self, b)
      }
 }
 
-impl<'a, T: Write + 'a> UnionWriteConst<'a> for T {}
+impl<T: Write> UnionWriteConst for T {}
 
 
 
 
 
 #[allow(non_camel_case_types)]
-pub struct UnionWrite<'a, W: Write + 'a, W2: Write + 'a>(W,W2, PhantomData<&'a ()>);
+pub struct UnionWrite<W: Write, W2: Write>(W,W2);
 
-impl<'a, W: Write + 'a, W2: Write + 'a> UnionWrite<'a, W, W2> {
+impl<W: Write, W2: Write> UnionWrite<W, W2> {
 	#[inline]
 	pub fn new(out: W, out2: W2) -> Self {
-		UnionWrite(out, out2, PhantomData)
+		UnionWrite(out, out2)
 	}
      #[inline]
-	pub fn boxed(out: W, out2: W2) -> Box<Write + 'a>{
+	pub fn boxed(out: W, out2: W2) -> Box<Self> {
 		Box::new(Self::new(out, out2))
 	}
 }
 
-impl<'a> LogEmptyConst for UnionWrite<'a, EmptyWrite, EmptyWrite> {
+impl<'a> LogEmptyConst for UnionWrite<EmptyWrite, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
 		Self::new(EmptyWrite, EmptyWrite)
@@ -44,7 +44,7 @@ impl<'a> LogEmptyConst for UnionWrite<'a, EmptyWrite, EmptyWrite> {
 
 
 
-impl<'a, W: Write + 'a, W2: Write + 'a> Debug for UnionWrite<'a, W, W2> {
+impl<W: Write, W2: Write> Debug for UnionWrite<W, W2> {
 	fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
 		f.pad("UnionWrite { .. }")
 	}
@@ -58,12 +58,14 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Drop for UnionWrite<'a, W, W2> {
 }
 */
 
-impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionWrite<'a, W, W2> {
+impl<W: Write, W2: Write> Write for UnionWrite<W, W2> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-          match self.0.write(buf) {
+          let e = self.0.write(buf);
+          let e2 = self.1.write(buf);
+          match e {
                Ok(s) => {
-                    match self.1.write(buf) {
+                    match e2 {
                          Ok(s2) => return Ok({
                               if s2 >= s {
                                    s
@@ -79,34 +81,39 @@ impl<'a, W: Write + 'a, W2: Write + 'a> Write for UnionWrite<'a, W, W2> {
      }
      #[inline(always)]
      fn flush(&mut self) -> io::Result<()> {
-          if let Err(e) = self.0.flush() {
+          let e = self.0.flush();
+          let e2 = self.1.flush();
+		if let Err(e) = e {
                return Err(e);
           }
-          self.1.flush()
+          e2
      }
 
 	#[inline(always)]
 	fn write_all(&mut self, buf: &[u8]) -> ::std::io::Result<()> {
-		if let Err(e) = self.0.write_all(buf) {
+		let e = self.0.write_all(buf);
+          let e2 = self.1.write_all(buf);
+		if let Err(e) = e {
                return Err(e);
           }
-          self.1.write_all(buf)
+          e2
 	}
 
 	#[inline(always)]
 	fn write_fmt(&mut self, fmt: ::std::fmt::Arguments) -> ::std::io::Result<()> {
-		if let Err(e) = self.0.write_fmt(fmt) {
+          let e = self.0.write_fmt(fmt);
+          let e2 = self.1.write_fmt(fmt);
+		if let Err(e) = e {
                return Err(e);
           }
-          self.1.write_fmt(fmt)
+          e2
 	}
 }
 
 //impl<'a, W: Write + 'a, W2: Write + 'a> LogSafeLock<'a> for UnionWrite<'a, W, W2> {}
 
 
-impl<'a, W: Write + 'a + Clone, W2: Write + 'a + Clone> Clone for UnionWrite<'a, W, W2> {
-
+impl<W: Write + Clone, W2: Write + Clone> Clone for UnionWrite<W, W2> {
      fn clone(&self) -> Self {
           Self::new(self.0.clone(), self.1.clone())
      }

@@ -66,12 +66,12 @@ impl<'a> LogBase<'a> for LogTotalEmpty {
 
 impl<'a> LogFlush<'a> for LogTotalEmpty {
 	#[inline(always)]	
-	fn flush_out(&'a self) -> io::Result<()> {
+	fn flush_out(&self) -> io::Result<()> {
 		Ok( () )
 	}
 	
 	#[inline(always)]
-	fn flush_err(&'a self) -> io::Result<()> {
+	fn flush_err(&self) -> io::Result<()> {
 		Ok( () )
 	}
 }

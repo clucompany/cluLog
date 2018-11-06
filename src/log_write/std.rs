@@ -6,16 +6,18 @@ use log_write::LogWrite;
 use std::io::StdoutLock;
 use std::io::Stdout;
 
-impl<'a> LogWrite<'a, StdoutLock<'a>> for Stdout {
+impl<'a> LogWrite<'a> for Stdout {
+     type Lock = StdoutLock<'a>;
      #[inline(always)]
-     fn lock(&'a self) -> StdoutLock<'a> {
+     fn lock(&'a self) -> Self::Lock {
           self.lock()
      }
 }
 
-impl<'a> LogWrite<'a, StderrLock<'a>> for Stderr {
+impl<'a> LogWrite<'a> for Stderr {
+     type Lock = StderrLock<'a>;
      #[inline(always)]
-     fn lock(&'a self) -> StderrLock<'a> {
+     fn lock(&'a self) -> Self::Lock {
           self.lock()
      }
 }

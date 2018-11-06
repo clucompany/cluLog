@@ -4,19 +4,19 @@ use std::io::Write;
 
 
 #[derive(Debug)]
-pub struct FlushWrite<'a, T: Write + 'a>(T, PhantomData<&'a ()>);
+pub struct FlushWrite<T: Write>(T);
 
-impl<'a, T: Write + 'a> FlushWrite<'a, T> {
+impl<T: Write> FlushWrite<T> {
 	#[inline]
 	pub fn new(a: T) -> Self {
-		FlushWrite(a, PhantomData)
+		FlushWrite(a)
 	}
 
 	#[inline(always)]
 	pub fn flush(self) {}
 }
 
-impl<'a, T: Write + 'a> Write for FlushWrite<'a, T> {
+impl<T: Write> Write for FlushWrite<T> {
 	#[inline(always)]
 	fn write(&mut self, buf: &[u8]) -> ::std::io::Result<usize> {
 		self.0.write(buf)
@@ -39,7 +39,7 @@ impl<'a, T: Write + 'a> Write for FlushWrite<'a, T> {
 }
 
 
-impl<'a, T: Write + 'a> Drop for FlushWrite<'a, T> {
+impl<T: Write> Drop for FlushWrite<T> {
 	#[inline(always)]
 	fn drop(&mut self) {
 		let _e = self.0.flush();

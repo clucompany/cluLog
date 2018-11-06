@@ -14,7 +14,7 @@ use std::io::BufWriter;
 
 
 pub fn file<'a, W: LogShape, P: LogPanic>(f: File) -> 
-LogOneDefault<'a, W, P, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> {
+LogOneDefault<'a, W, P, MutexWrite<BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> {
      
      LogOneDefault::new(
           MutexWrite::new(BufWriter::new(f))
@@ -24,14 +24,14 @@ LogOneDefault<'a, W, P, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWrite
 
 #[inline]
 pub fn default_file<'a, PA: AsRef<Path>>(f: File) -> 
-LogOneDefault<'a, DefLogShape, DefLogPanic, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> {
+LogOneDefault<'a, DefLogShape, DefLogPanic, MutexWrite<BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> {
 
      file(f)
 }
 
 
 #[inline]
-pub fn open_path<'a, W: LogShape, P: LogPanic, PA: AsRef<Path>>(path: PA) -> io::Result< LogOneDefault<'a, W, P, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
+pub fn open_path<'a, W: LogShape, P: LogPanic, PA: AsRef<Path>>(path: PA) -> io::Result< LogOneDefault<'a, W, P, MutexWrite<BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
      match File::open(path) {
           Ok(a) => Ok( file(a) ),
           Err(e) => Err(e),
@@ -39,13 +39,13 @@ pub fn open_path<'a, W: LogShape, P: LogPanic, PA: AsRef<Path>>(path: PA) -> io:
 }
 
 #[inline]
-pub fn default_open_path<'a, P: AsRef<Path>>(path: P) -> io::Result< LogOneDefault<'a, DefLogShape, DefLogPanic, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
+pub fn default_open_path<'a, P: AsRef<Path>>(path: P) -> io::Result< LogOneDefault<'a, DefLogShape, DefLogPanic, MutexWrite<BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
      open_path(path)
 }
 
 
 #[inline]
-pub fn create_path<'a, W: LogShape, P: LogPanic, PA: AsRef<Path>>(path: PA) -> io::Result< LogOneDefault<'a, W, P, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
+pub fn create_path<'a, W: LogShape, P: LogPanic, PA: AsRef<Path>>(path: PA) -> io::Result< LogOneDefault<'a, W, P, MutexWrite<BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
      match File::open(path) {
           Ok(a) => Ok( file(a) ),
           Err(e) => Err(e),
@@ -53,6 +53,6 @@ pub fn create_path<'a, W: LogShape, P: LogPanic, PA: AsRef<Path>>(path: PA) -> i
 }
 
 #[inline]
-pub fn default_create_path<'a, P: AsRef<Path>>(path: P) -> io::Result< LogOneDefault<'a, DefLogShape, DefLogPanic, MutexWrite<'a, BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
+pub fn default_create_path<'a, P: AsRef<Path>>(path: P) -> io::Result< LogOneDefault<'a, DefLogShape, DefLogPanic, MutexWrite<BufWriter<File>>, GuardWrite<'a, BufWriter<File>>> > {
      create_path(path)
 }

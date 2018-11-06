@@ -1,7 +1,6 @@
 
 
 use std::sync::MutexGuard;
-use std::marker::PhantomData;
 use std::io::Write;
 use std::sync::Mutex;
 use log_write::LogWrite;
@@ -9,20 +8,20 @@ use std::io;
 use std::fmt;
 
 #[derive(Debug)]
-pub struct MutexWrite<'a, T: 'a + Write>(Mutex<T>, PhantomData<&'a ()>);
+pub struct MutexWrite<T: Write>(Mutex<T>);
 
-impl<'a, T: 'a + Write> MutexWrite<'a, T> {
+impl<T: Write> MutexWrite<T> {
      #[inline]
      pub fn new(t: T) -> Self {
           Self::mutex(Mutex::new(t))
      }
      #[inline]
      pub fn mutex(m: Mutex<T>) -> Self {
-          MutexWrite(m, PhantomData)
+          MutexWrite(m)
      }
 
      #[inline(always)]
-     fn _lock(&'a self) -> MutexGuard<'a, T> {
+     fn _lock<'a>(&'a self) -> MutexGuard<'a, T> {
           match self.0.lock() {
                Ok(a) => a,
                Err(e) => e.into_inner(),
@@ -30,7 +29,7 @@ impl<'a, T: 'a + Write> MutexWrite<'a, T> {
      }
 }
 
-impl<'a, T: 'a + Write> Write for MutexWrite<'a, T> {
+impl<T: Write> Write for MutexWrite<T> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           self._lock().write(buf)
@@ -52,9 +51,10 @@ impl<'a, T: 'a + Write> Write for MutexWrite<'a, T> {
      }
 }
 
-impl<'a, T: 'a + Write> LogWrite<'a, GuardWrite<'a, T>> for MutexWrite<'a, T> {
+impl<'a, T: 'a +  Write> LogWrite<'a> for MutexWrite<T> {
+     type Lock = GuardWrite<'a, T>;
      #[inline]
-     fn lock(&'a self) -> GuardWrite<'a, T> {
+     fn lock(&'a self) -> Self::Lock {
           GuardWrite::guard(self._lock())
      }
      /*#[inline(always)]
@@ -64,24 +64,13 @@ impl<'a, T: 'a + Write> LogWrite<'a, GuardWrite<'a, T>> for MutexWrite<'a, T> {
 }
 
 
-impl<'a, T: 'a + Write + Clone> Clone for MutexWrite<'a, T> {
-     #[inline]
-     fn clone(&self) -> Self {
-          MutexWrite::new(
-               self._lock().clone()
-          )
-     }
-}
-
-
-
 #[derive(Debug)]
-pub struct GuardWrite<'a, T: Write + 'a>(MutexGuard<'a, T>, PhantomData<&'a ()>);
+pub struct GuardWrite<'a, T: 'a +  Write>(MutexGuard<'a, T>);
 
-impl<'a, T: Write + 'a> GuardWrite<'a, T> {
+impl<'a, T: Write> GuardWrite<'a, T> {
      #[inline]
      pub fn guard(t: MutexGuard<'a, T>) -> Self {
-          GuardWrite(t, PhantomData)
+          GuardWrite(t)
      }
 
      #[inline]
@@ -90,7 +79,7 @@ impl<'a, T: Write + 'a> GuardWrite<'a, T> {
      }
 }
 
-impl<'a, T: Write + 'a> Write for GuardWrite<'a, T> {
+impl<'a, T: 'a + Write> Write for GuardWrite<'a, T> {
      #[inline(always)]
      fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
           self.0.write(buf)

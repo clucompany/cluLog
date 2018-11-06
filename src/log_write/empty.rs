@@ -31,7 +31,7 @@ impl Write for EmptyWrite {
 	}
 
      #[inline(always)]
-     fn write_all(&mut self, _buf: &[u8]) -> io::Result<()> {
+     fn write_all<'a>(&mut self, _buf: &'a [u8]) -> io::Result<()> {
           Ok( () )
      }
 
@@ -43,30 +43,11 @@ impl Write for EmptyWrite {
 
 
 
-impl<'a> LogWrite<'a, EmptyWrite> for EmptyWrite {     
+impl<'a> LogWrite<'a> for EmptyWrite {    
+     type Lock = EmptyWrite; 
      #[inline(always)]
-     fn lock(&'a self) -> EmptyWrite {
+     fn lock(&self) -> Self::Lock {
           EmptyWrite
      }
-
-     /*#[inline(always)]
-     fn flush(&self) -> io::Result<()> {
-          Ok( () )
-     }
-     */
-}
-/*
-impl<'a> LogWrite<'a, LogSafeWriteLock<'a, EmptyWrite>> for EmptyWrite {
-     #[inline(always)]
-     fn lock(&'a self) -> LogSafeWriteLock<'a, EmptyWrite> {
-          LogSafeWriteLock::new(self.clone())
-     }
 }
 
-impl<'a> LogWrite<'a, LogSafeWriteNFLock<'a, EmptyWrite>> for EmptyWrite {
-     #[inline(always)]
-     fn lock(&'a self) -> LogSafeWriteNFLock<'a, EmptyWrite> {
-          LogSafeWriteNFLock::new(self.clone())
-     }
-}
-*/
