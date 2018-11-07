@@ -1,5 +1,5 @@
 
-
+use log_addition::LogEmptyConst;
 use std::io::Write;
 use log_core::LogBase;
 use log_core::LogStatic;
@@ -18,6 +18,13 @@ impl LogTotalEmpty {
 	#[inline(always)]
 	pub fn new() -> Self {
 		LogTotalEmpty
+	}
+}
+
+impl LogEmptyConst for LogTotalEmpty {
+	#[inline]
+	fn empty() -> Self {
+		Self::new()
 	}
 }
 
@@ -77,10 +84,12 @@ impl<'a> LogFlush<'a> for LogTotalEmpty {
 }
 
 impl<'a> LogLockIO<'a> for LogTotalEmpty {
+     #[inline(always)]
 	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
 		EmptyWrite::boxed()
 	}
 
+     #[inline(always)]
 	fn raw_lock_err(&'a self) -> Box<Write + 'a> {
 		EmptyWrite::boxed()
 	}

@@ -1,21 +1,13 @@
 
 #[macro_use]
 extern crate cluLog;
-
+use cluLog::LogFile;
 
 fn main() {
-	//init_clulog!();	
-	
-     {
-          //Colored mode!
-          match cluLog::log_addition::file::default_open_path("/tmp/test") {
-               Ok(file_log) => {cluLog::set_logger(file_log);},
-               Err(e) => {
-                    panic!("Err open file output, {:?}", e);
-                    return;
-               },
-          }
-     }
+     match LogFile::default_open_path("/tmp/test") {
+          Ok(file_log) => cluLog::set_logger(file_log),
+          Err(e) => panic!("Err open file output, {:?}", e),
+     };
      
      trace!("Test 1");
      println!("Test 2");

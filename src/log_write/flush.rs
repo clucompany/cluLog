@@ -1,7 +1,5 @@
 
-use std::marker::PhantomData;
 use std::io::Write;
-
 
 #[derive(Debug)]
 pub struct FlushWrite<T: Write>(T);

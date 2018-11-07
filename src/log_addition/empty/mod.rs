@@ -4,10 +4,13 @@
 mod total;
 mod default;
 
-pub use self::default::*;
-pub use self::total::*;
 
-///The constructor of empty structures
+
+pub use self::total::*;
+pub use self::default::*;
+
+
+
 pub trait LogEmptyConst {
      ///Use an empty lock
      fn empty() -> Self;
@@ -17,5 +20,3 @@ pub trait LogEmptyConst {
 		Box::new(Self::empty())
 	}
 }
-
-

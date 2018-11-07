@@ -3,31 +3,27 @@
 #[macro_use]
 extern crate clucolor;
 
-mod log;
-pub mod log_panic;
 pub mod log_shape;
 pub mod log_addition;
-//pub mod log_lock;
 pub mod log_write;
 pub mod log_core;
 
 mod macros;
+mod macros_out;
 
-pub use self::log::LogDefault;
-pub use self::log::LogOneDefault;
+pub use self::log_addition::LogDefault;
+pub use self::log_addition::LogOneDefault;
+pub use self::log_addition::LogEmpty;
+pub use self::log_addition::LogTotalEmpty;
+pub use self::log_addition::LogUnion;
+pub use self::log_addition::LogFile;
+
 use log_core::LogStatic;
-use log_addition::empty::LogTotalEmpty;
 use std::sync::{Once, ONCE_INIT};
 
-/*
-pub use self::log_shape::DefLogColorShape;
-pub use self::log_shape::DefLogShape;
-pub use self::log_panic::DefLogPanic;
-*/
 pub type DefLogColorShape = self::log_shape::DefLogColorShape;
 pub type DefLogShape = self::log_shape::DefLogShape;
-pub type DefLogPanic = self::log_panic::DefLogPanic;
-pub type DefLog<'a> = self::log::DefLog<'a>;
+pub type DefLog<'a> = self::log_addition::DefLog<'a>;
 
 
 static mut LOGGER: &'static LogStatic<'static> = &LogTotalEmpty;
@@ -76,79 +72,5 @@ pub fn set_boxed_logger(log: Box<LogStatic<'static>>) -> bool {
 #[inline(always)]
 pub fn as_log() -> &'static LogStatic<'static> {
 	unsafe { LOGGER }
-}
-
-
-#[macro_export]
-macro_rules! init_clulog {
-	(null) => {
-		use $crate::log_addition::empty::LogTotalEmpty;
-
-		$crate::set_slice_logger(&LogTotalEmpty)
-	};
-	
-	(none) => {
-		use $crate::log_addition::empty::LogEmpty;
-		$crate::set_logger(LogEmpty::default())
-	};
-	(total_none) => {
-		use $crate::log_addition::empty::LogTotalEmpty;
-
-		$crate::set_slice_logger(&LogTotalEmpty);
-	};
-
-	(one) => {
-		use $crate::LogOneDefault;
-		$crate::set_logger(LogOneDefault::default());
-	};
-	(one, $e:expr) => {
-		use $crate::LogOneDefault;
-		$crate::set_logger(LogOneDefault::new($e));
-	};
-
-	(union, $panic:tt, $a:expr, $b:expr) => {
-		$crate::set_logger($a.union::<$panic, _>($b));
-	};
-	(union, $a:expr, $b:expr) => {
-		$crate::set_logger($a.default_union($b));
-	};
-	
-	/*(panic, $panic:tt) => {
-		use cluLog::DefLogWrite;
-		cluLog::set_logger(&cluLog::init_std::<DefLogWrite, $panic>())
-	};
-	
-	(write, $write:tt) => {
-		use cluLog::DefLogPanic;
-		cluLog::set_logger(&cluLog::init_std::<$write, DefLogPanic>())
-	};
-	
-	($write:tt, $panic:tt) => {
-		use cluLog::log::default::LogDefault;
-		cluLog::set_boxed_logger(LogDefault::<$write, $panic>::default_box());
-	};*/
-
-
-	() => {
-		use $crate::LogDefault;
-		$crate::set_logger(LogDefault::default());
-	};
-	($e: expr) => {
-		use $crate::LogOneDefault;
-		$crate::set_logger(LogOneDefault::new($e));
-	};
-	($e: expr, $e2: expr) => {
-		use $crate::LogDefault;
-		$crate::set_logger(LogDefault::new($e, $e2));
-	};
-}
-
-
-///Obtaining a link to active logging
-#[macro_export]
-macro_rules! as_log {
-	() => {
-		$crate::as_log()
-	};
 }
 

@@ -1,9 +1,8 @@
 
 
+use log_addition::LogEmptyConst;
 use log_write::EmptyWrite;
-use log_addition::empty::LogEmptyConst;
 use std::fmt::Debug;
-use std::marker::PhantomData;
 use std::io::Write;
 use std::io;
 
@@ -35,10 +34,10 @@ impl<W: Write, W2: Write> UnionWrite<W, W2> {
 	}
 }
 
-impl<'a> LogEmptyConst for UnionWrite<EmptyWrite, EmptyWrite> {
+impl LogEmptyConst for UnionWrite<EmptyWrite, EmptyWrite> {
 	#[inline]
 	fn empty() -> Self {
-		Self::new(EmptyWrite, EmptyWrite)
+		UnionWrite::new(EmptyWrite::new(), EmptyWrite::new())
 	}
 }
 

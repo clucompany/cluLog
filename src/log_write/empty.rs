@@ -4,6 +4,8 @@ use std::io;
 use std::io::Write;
 use std::fmt;
 
+pub type GuardEmptyWrite = EmptyWrite;
+
 #[derive(Debug, Clone)]
 pub struct EmptyWrite;
 

@@ -57,10 +57,6 @@ impl<'a, T: 'a +  Write> LogWrite<'a> for MutexWrite<T> {
      fn lock(&'a self) -> Self::Lock {
           GuardWrite::guard(self._lock())
      }
-     /*#[inline(always)]
-     fn flush(&self) -> io::Result<()> {
-          self._lock().flush()
-     }*/
 }
 
 

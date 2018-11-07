@@ -1,25 +1,26 @@
 
 #[macro_use]
 extern crate cluLog;
+use cluLog::log_addition::LogUnionConst;
 use std::io::Write;
-use cluLog::log_addition::union::LogUnionConst;
+use cluLog::LogFile;
 
 
 fn main() {
      {
-          let union = cluLog::LogDefault::default(
+          let log_system = cluLog::LogDefault::default(
                
-          ).default_union(
+          ).union(
                cluLog::LogDefault::default()
           );
 
           cluLog::set_boxed_logger({
-               match cluLog::log_addition::file::default_create_path("/tmp/clulog.out") {
+               match LogFile::default_create_path("/tmp/clulog.out") {
                     Ok(file) => {
-                         union.default_union(file).to_box()
+                         log_system.union(file).to_box()
                     },
                     _ => {
-                         union.to_box()
+                         log_system.to_box()
                     },
                }
           });
