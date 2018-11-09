@@ -6,12 +6,11 @@ use log_core::LogStatic;
 use log_core::LogExtend;
 use log_core::LogLockIO;
 use log_core::LogFlush;
+use cluExtIO::EmptyWrite;
 use std::fmt::Arguments;
 use std::io;
-use log_write::EmptyWrite;
 
-
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct LogTotalEmpty;
 
 impl LogTotalEmpty {
@@ -25,6 +24,13 @@ impl LogEmptyConst for LogTotalEmpty {
 	#[inline]
 	fn empty() -> Self {
 		Self::new()
+	}
+}
+
+impl Clone for LogTotalEmpty {
+	#[inline(always)]
+	fn clone(&self) -> Self {
+		LogTotalEmpty
 	}
 }
 

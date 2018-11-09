@@ -1,7 +1,7 @@
 
 
+use cluExtIO::FlushWrite;
 use std::io::Write;
-use log_write::FlushWrite;
 
 ///Secure outflow blocking
 #[allow(non_camel_case_types)]

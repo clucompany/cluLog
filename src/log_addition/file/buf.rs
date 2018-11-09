@@ -1,12 +1,12 @@
 
 
+use cluExtIO::MutexWrite;
+use cluExtIO::GuardWrite;
 use log_addition::LogOneDefault;
-use log_write::GuardWrite;
 use log_shape::DefLogShape;
 use log_core::LogShape;
 use std::path::Path;
 use std::fs::File;
-use log_write::MutexWrite;
 use std::io;
 use std::io::BufWriter;
 

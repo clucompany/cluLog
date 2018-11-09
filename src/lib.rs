@@ -2,10 +2,10 @@
 
 #[macro_use]
 extern crate clucolor;
+extern crate cluExtIO;
 
 pub mod log_shape;
 pub mod log_addition;
-pub mod log_write;
 pub mod log_core;
 
 mod macros;

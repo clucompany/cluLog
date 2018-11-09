@@ -1,14 +1,14 @@
 
+use cluExtIO::GuardEmptyWrite;
+use cluExtIO::EmptyWrite;
+use cluExtIO::ExtWrite;
 use log_addition::LogEmptyConst;
-use log_write::GuardEmptyWrite;
-use log_write::EmptyWrite;
 use log_core::LogExtend;
 use log_core::LogStatic;
 use log_core::LogLockIO;
 use log_core::LogBase;
 use log_core::LogFlush;
 use log_core::LogShape;
-use log_write::LogWrite;
 use DefLogShape;
 use std::io::StdoutLock;
 use std::io::Stdout;
@@ -19,7 +19,7 @@ use std::io;
 
 ///Log system with one out stream.
 #[derive(Debug)]
-pub struct LogOneDefault<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: 'a +  Write> {
+pub struct LogOneDefault<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: 'a +  Write> {
 	_w:	PhantomData<W>,
 	_ln: PhantomData<&'a ()>,
 	_ol: PhantomData<OL>,
@@ -36,7 +36,7 @@ impl<'a> Default for LogOneDefault<'a, DefLogShape, Stdout, StdoutLock<'a>> {
 
 
 
-impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogOneDefault<'a, W, O, OL> {
+impl<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: Write> LogOneDefault<'a, W, O, OL> {
 	#[inline]
 	pub fn new(out: O) -> Self {		
 		Self {
@@ -56,7 +56,7 @@ impl<'a> LogEmptyConst for LogOneDefault<'a, DefLogShape, EmptyWrite, GuardEmpty
 	}
 }
 
-impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogBase<'a> for LogOneDefault<'a, W, O, OL> {
+impl<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: Write> LogBase<'a> for LogOneDefault<'a, W, O, OL> {
 	fn warning<'l>(&'a self, args: Arguments) -> io::Result<()> {
 		W::warning(self.out.lock(), args)
 	}
@@ -90,7 +90,7 @@ impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogBase<'a> for Log
 	}
 }
 
-impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogFlush<'a> for LogOneDefault<'a, W, O, OL> {
+impl<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: Write> LogFlush<'a> for LogOneDefault<'a, W, O, OL> {
 	fn flush_out(&'a self) -> io::Result<()> {
 		self.out.lock().flush()
 	}
@@ -104,7 +104,7 @@ impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogFlush<'a> for Lo
 	}
 }
 	
-impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogLockIO<'a> for LogOneDefault<'a, W, O, OL> {
+impl<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: Write> LogLockIO<'a> for LogOneDefault<'a, W, O, OL> {
 	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
 		//GuardWrite::boxed(self.out.lock())
 		Box::new(self.out.lock())
@@ -117,5 +117,5 @@ impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogLockIO<'a> for L
 }
 
 
-impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogStatic<'a> for LogOneDefault<'a, W, O, OL> {}
-impl<'a, W: LogShape, O: LogWrite<'a, Lock = OL>, OL: Write> LogExtend<'a> for LogOneDefault<'a, W, O, OL> {}
+impl<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: Write> LogStatic<'a> for LogOneDefault<'a, W, O, OL> {}
+impl<'a, W: LogShape, O: ExtWrite<'a, Lock = OL>, OL: Write> LogExtend<'a> for LogOneDefault<'a, W, O, OL> {}

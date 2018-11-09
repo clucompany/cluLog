@@ -1,6 +1,7 @@
 
 //!Combining several log systems into one.
 
+use cluExtIO::UnionWrite;
 use log_addition::LogEmptyConst;
 use log_addition::LogTotalEmpty;
 use std::io::Write;
@@ -12,8 +13,6 @@ use log_core::LogExtend;
 use std::fmt::Arguments;
 use std::marker::PhantomData;
 use std::io;
-use log_write::UnionWrite;
-
 
 pub struct LogUnion<'a, A: LogExtend<'a>, B: LogExtend<'a>>(A, B, PhantomData<&'a ()>);
 
