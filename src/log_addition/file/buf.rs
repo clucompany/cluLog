@@ -51,7 +51,7 @@ impl<'a, W: LogShape> LogFile<'a, W> {
 
      #[inline]
      pub fn create_path<PA: AsRef<Path>>(path: PA) -> io::Result< Self > {
-          match File::open(path) {
+          match File::create(path) {
                Ok(a) => Ok( Self::file(a) ),
                Err(e) => Err(e),
           }
