@@ -1,11 +1,13 @@
 
-use log_addition::LogEmptyConst;
+
+use crate::log_addition::LogEmptyConst;
+use crate::log_core::LogBase;
+use crate::log_core::LogStatic;
+use crate::log_core::LogExtend;
+use crate::log_core::LogLockIO;
+use crate::log_core::LogFlush;
+
 use std::io::Write;
-use log_core::LogBase;
-use log_core::LogStatic;
-use log_core::LogExtend;
-use log_core::LogLockIO;
-use log_core::LogFlush;
 use cluExtIO::EmptyWrite;
 use std::fmt::Arguments;
 use std::io;
@@ -102,6 +104,5 @@ impl<'a> LogLockIO<'a> for LogTotalEmpty {
 }
 
 
-//impl<'a> LogUnionConst<'a> for LogTotalEmpty {}
 impl<'a> LogStatic<'a> for LogTotalEmpty {}
 impl<'a> LogExtend<'a> for LogTotalEmpty {}

@@ -2,12 +2,14 @@
 use cluExtIO::GuardEmptyWrite;
 use cluExtIO::EmptyWrite;
 use cluExtIO::ExtWrite;
-use log_addition::LogEmptyConst;
-use log_core::LogLockIO;
-use log_core::LogExtend;
-use log_core::LogFlush;
-use log_core::LogStatic;
-use log_core::LogBase;
+
+use crate::log_addition::LogEmptyConst;
+use crate::log_core::LogLockIO;
+use crate::log_core::LogExtend;
+use crate::log_core::LogFlush;
+use crate::log_core::LogStatic;
+use crate::log_core::LogBase;
+
 use std::io::Stderr;
 use std::io::Stdout;
 use std::marker::PhantomData;
@@ -105,9 +107,5 @@ impl<'a, W: ExtWrite<'a, Lock = WL>, W2: ExtWrite<'a, Lock = WL2>, WL: 'a +  Wri
 	}
 }
 
-//impl<'a, W: ExtWrite<'a, StdoutLock<'a>>, W2: ExtWrite<'a, StderrLock<'a>>> LogUnionConst<'a> for LogEmpty<'a, W, W2> {}
 impl<'a, W: ExtWrite<'a, Lock = WL>, W2: ExtWrite<'a, Lock = WL2>, WL: 'a +  Write, WL2: 'a +  Write> LogStatic<'a> for LogEmpty<'a, W, W2, WL, WL2> {}
 impl<'a, W: ExtWrite<'a, Lock = WL>, W2: ExtWrite<'a, Lock = WL2>, WL: Write, WL2: Write> LogExtend<'a> for LogEmpty<'a, W, W2, WL, WL2> {}
-
-
-

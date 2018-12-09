@@ -6,7 +6,7 @@ mod lock;
 mod shape;
 //mod panic;
 
-use log_addition::LogUnionConst;
+use crate::log_addition::LogUnionConst;
 pub use self::flush::*;
 pub use self::out::*;
 pub use self::lock::*;

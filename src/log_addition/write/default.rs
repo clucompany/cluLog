@@ -2,14 +2,16 @@
 use cluExtIO::ExtWrite;
 use cluExtIO::GuardEmptyWrite;
 use cluExtIO::EmptyWrite;
-use log_addition::LogEmptyConst;
-use log_core::LogLockIO;
-use log_core::LogExtend;
-use log_core::LogStatic;
-use log_core::LogFlush;
-use log_core::LogBase;
-use log_core::LogShape;
-use DefLogShape;
+
+use crate::log_addition::LogEmptyConst;
+use crate::log_core::LogLockIO;
+use crate::log_core::LogExtend;
+use crate::log_core::LogStatic;
+use crate::log_core::LogFlush;
+use crate::log_core::LogBase;
+use crate::log_core::LogShape;
+use crate::DefLogShape;
+
 use std::io::StderrLock;
 use std::io::StdoutLock;
 use std::io::Stdout;

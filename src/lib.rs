@@ -18,7 +18,7 @@ pub use self::log_addition::LogTotalEmpty;
 pub use self::log_addition::LogUnion;
 pub use self::log_addition::LogFile;
 
-use log_core::LogStatic;
+use crate::log_core::LogStatic;
 use std::sync::{Once, ONCE_INIT};
 
 pub type DefLogColorShape = self::log_shape::DefLogColorShape;

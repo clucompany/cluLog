@@ -3,7 +3,7 @@
 mod default;
 pub use self::default::*;
 
-use log_core::LogExtend;
+use crate::log_core::LogExtend;
 
 
 
