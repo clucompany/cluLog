@@ -1,5 +1,4 @@
 
-
 use std::io;
 
 
@@ -16,49 +15,50 @@ pub trait LogFlush<'a> {
 	fn flush(&'a self) -> io::Result<()> {
 		let e = self.flush_out();
 		let e2 = self.flush_err();
-		if let Err(e) = e {
-			return Err(e);
+
+		if let Err(_) = e {
+			return e;
 		}
 		e2
 	}
 }
 
-impl<'a, A: LogFlush<'a>> LogFlush<'a> for &'a A {
+impl<'a, 'l, A: LogFlush<'a>> LogFlush<'a> for &'l A {
 	///Flush the output stream
 	#[inline(always)]
 	fn flush_out(&'a self) -> io::Result<()> {
-		(**self).flush_out()
+		A::flush_out(self)
 	}
 
 	///Flush the err-output stream
 	#[inline(always)]
 	fn flush_err(&'a self) -> io::Result<()> {
-		(**self).flush_err()
+		A::flush_err(self)
 	}
 	
 	///Flush Out stream and Err stream
 	#[inline(always)]
 	fn flush(&'a self) -> io::Result<()>  {
-		(**self).flush()
+		A::flush(self)
 	}
 }
 
-impl<'a, A: LogFlush<'a>> LogFlush<'a> for &'a mut A {
+impl<'a, 'l, A: LogFlush<'a>> LogFlush<'a> for &'l mut A {
 	///Flush the output stream
 	#[inline(always)]
 	fn flush_out(&'a self) -> io::Result<()> {
-		(**self).flush_out()
+		A::flush_out(self)
 	}
 
 	///Flush the err-output stream
 	#[inline(always)]
 	fn flush_err(&'a self) -> io::Result<()> {
-		(**self).flush_err()
+		A::flush_err(self)
 	}
 	
 	///Flush Out stream and Err stream
 	#[inline(always)]
 	fn flush(&'a self) -> io::Result<()>  {
-		(**self).flush()
+		A::flush(self)
 	}
 }

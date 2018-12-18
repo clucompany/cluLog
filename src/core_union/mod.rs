@@ -1,9 +1,9 @@
 
+#[macro_use]
+mod log;
+pub use self::log::*;
 
-mod default;
-pub use self::default::*;
-
-use crate::log_core::LogExtend;
+use crate::core::LogExtend;
 
 
 
@@ -15,6 +15,13 @@ pub trait LogUnionConst {
      }
 }
 
-
 impl<'a, T: LogExtend<'a> + Sized> LogUnionConst for T { }
+
+
+impl<'a, A: LogExtend<'a>, B: LogExtend<'a>> From<(A, B)> for LogUnion<'a, A, B> {
+     #[inline(always)]
+     fn from((a, b): (A, B)) -> Self {
+          a.union(b)
+     }
+}
 

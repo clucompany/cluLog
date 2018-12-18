@@ -7,6 +7,13 @@ use std::io;
 
 ///Method of writing the data log
 pub trait LogShape: Debug {
+	fn unknown<'s, W: Write>(write: W, name: &'static str, display: Arguments<'s>) -> io::Result<()>;
+	//[UNK] - unknown 
+	
+	fn trace<'s, W: Write>(write: W, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()>;
+	//[TRACE][src/main.rs][38:29] - trace
+
+
 	fn warning<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[WAR] - warning value
 	
@@ -18,12 +25,6 @@ pub trait LogShape: Debug {
 	
 	fn panic<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[PANIC] - panic program
-	
-	fn unknown<'s, W: Write>(write: W, name: &'static str, display: Arguments<'s>) -> io::Result<()>;
-	//[UNK] - unknown 
-	
-	fn trace<'s, W: Write>(write: W, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()>;
-	//[TRACE][src/main.rs][38:29] - trace
 
 	fn print<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()>;
 	//[ERR] - print value
@@ -44,6 +45,7 @@ impl<'a, A: LogShape> LogShape for &'a A {
 		A::info(write, display)
 	}
 	//[INF] - info value
+	
 	
 	#[inline(always)]
 	fn error<'s, W: Write>(write: W, display: Arguments<'s>) -> io::Result<()> {
@@ -81,6 +83,8 @@ impl<'a, A: LogShape> LogShape for &'a A {
 	}
 	//[ERR] - print value
 }
+
+
 
 
 impl<'a, A: LogShape> LogShape for &'a mut A {

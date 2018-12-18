@@ -1,16 +1,20 @@
 
+#[macro_use]
+mod out;
+
 
 mod flush;
-mod out;
+
 mod lock;
 mod shape;
-//mod panic;
 
-use crate::log_addition::LogUnionConst;
+
+use crate::core_union::LogUnionConst;
 pub use self::flush::*;
 pub use self::out::*;
 pub use self::lock::*;
 pub use self::shape::*;
+
 
 ///An empty implementation allows you to use the current log system as the main
 pub trait LogStatic<'a>: LogBase<'a> + LogLockIO<'a> + LogFlush<'a> {
@@ -28,8 +32,6 @@ pub trait LogExtend<'a>: LogBase<'a> + LogLockIO<'a> + LogFlush<'a> + LogUnionCo
 
 }
 
-
-
 impl<'a, A: LogExtend<'a>> LogExtend<'a> for &'a A {}
 impl<'a, A: LogExtend<'a>> LogExtend<'a> for &'a mut A {}
 
@@ -38,10 +40,4 @@ impl<'a, A: LogExtend<'a>> LogExtend<'a> for &'a mut A {}
 pub trait Log<'a>: LogStatic<'a> + LogExtend<'a> {}
 
 impl<'a, A: LogStatic<'a> + LogExtend<'a>> Log<'a> for A { }
-
-
-/*
-impl<'a, A: Log<'a>> Log<'a> for &'a A {}
-impl<'a, A: Log<'a>> Log<'a> for &'a mut A {}
-*/
 
