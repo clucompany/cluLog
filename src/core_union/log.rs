@@ -23,6 +23,11 @@ impl<'a, A: LogExtend<'a>, B: LogExtend<'a>> LogUnion<'a, A, B> {
                a, b, PhantomData,
           )
      }
+
+     #[inline(always)]
+     pub fn to_box(self) -> Box<Self> {
+          Box::new(self)
+     }
 }
 
 impl<'a, A: LogExtend<'a> + Clone, B: LogExtend<'a> + Clone> Clone for LogUnion<'a, A, B> {

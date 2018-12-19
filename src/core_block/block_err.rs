@@ -22,6 +22,10 @@ impl<'a, A: LogExtend<'a>> BlockLogErr<'a, A> {
                a, PhantomData,
           )
      }
+     #[inline(always)]
+     pub fn to_box(self) -> Box<Self> {
+          Box::new(self)
+     }
 }
 
 /*

@@ -21,6 +21,10 @@ impl<'a, A: LogExtend<'a>> BlockLogOut<'a, A> {
                a, PhantomData,
           )
      }
+     #[inline(always)]
+     pub fn to_box(self) -> Box<Self> {
+          Box::new(self)
+     }
 }
 
 /*
