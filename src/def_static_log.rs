@@ -5,7 +5,6 @@ use crate::core::LogLockIO;
 use crate::core::LogFlush;
 use crate::core::LogBase;
 use std::io::Write;
-use cluExtIO::EmptyWrite;
 use std::fmt::Arguments;
 use std::io;
 
@@ -59,37 +58,37 @@ impl<'a> LogBase<'a> for LogDefStaticLog {
 	}
 	
 	#[inline(always)]	
-	fn print<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
-		Ok( () )
+	fn print<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
+		io::stdout().write_fmt(args)
 	}
 	
 	#[inline(always)]	
-	fn eprint<'l>(&'a self, _args: Arguments<'l>) -> io::Result<()> {
-		Ok( () )
+	fn eprint<'l>(&'a self, args: Arguments<'l>) -> io::Result<()> {
+		io::stderr().write_fmt(args)
 	}
 }
 
 impl<'a> LogFlush<'a> for LogDefStaticLog {
 	#[inline(always)]	
 	fn flush_out(&self) -> io::Result<()> {
-		Ok( () )
+		io::stdout().flush()
 	}
 	
 	#[inline(always)]
 	fn flush_err(&self) -> io::Result<()> {
-		Ok( () )
+		io::stderr().flush()
 	}
 }
 
 impl<'a> LogLockIO<'a> for LogDefStaticLog {
      #[inline(always)]
 	fn raw_lock_out(&'a self) -> Box<Write + 'a> {
-		EmptyWrite::new().into()
+		Box::new(io::stdout())
 	}
 
      #[inline(always)]
 	fn raw_lock_err(&'a self) -> Box<Write + 'a> {
-		EmptyWrite::new().into()
+		Box::new(io::stderr())
 	}
 }
 
