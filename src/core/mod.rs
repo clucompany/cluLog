@@ -1,10 +1,7 @@
 
 #[macro_use]
 mod out;
-
-
 mod flush;
-
 mod lock;
 mod shape;
 

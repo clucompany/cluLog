@@ -32,6 +32,10 @@ pub trait BlockLogDebugTrait<'a>: Sized + Log<'a> {
 	fn block_debug(self) -> BlockLogDebug<'a, Self> {
 		BlockLogDebug::new(self)
 	}
+	#[inline(always)]
+	fn block_debug_b(self) -> Box<BlockLogDebug<'a, Self>> {
+		BlockLogDebug::new_b(self)
+	}
 }
 
 impl<'a, L: Log<'a> + Sized> BlockLogDebugTrait<'a> for L {}
@@ -41,10 +45,18 @@ pub trait BlockLogOutTrait<'a>: Sized + Log<'a> {
 	fn block_out(self) -> BlockLogOut<'a, Self> {
 		BlockLogOut::new(self)
 	}
+	#[inline(always)]
+	fn block_out_b(self) -> Box<BlockLogOut<'a, Self>> {
+		BlockLogOut::new_b(self)
+	}
 
 	#[inline(always)]
 	fn block_err_out(self) -> BlockLogErrOut<'a, Self> {
 		BlockLogErrOut::new(self)
+	}
+	#[inline(always)]
+	fn block_err_out_b(self) -> Box<BlockLogErrOut<'a, Self>> {
+		BlockLogErrOut::new_b(self)
 	}
 }
 
@@ -55,6 +67,10 @@ pub trait BlockLogErrTrait<'a>: Sized + Log<'a> {
 	fn block_err(self) -> BlockLogErr<'a, Self> {
 		BlockLogErr::new(self)
 	}
+	#[inline(always)]
+	fn block_err_b(self) -> Box<BlockLogErr<'a, Self>> {
+		BlockLogErr::new_b(self)
+	}
 }
 
 impl<'a, L: Log<'a> + Sized> BlockLogErrTrait<'a> for L {}
@@ -63,6 +79,10 @@ pub trait BlockLogWarningTrait<'a>: Sized + Log<'a> {
 	#[inline(always)]
 	fn block_warning(self) -> BlockLogWarning<'a, Self> {
 		BlockLogWarning::new(self)
+	}
+	#[inline(always)]
+	fn block_warning_b(self) -> Box<BlockLogWarning<'a, Self>> {
+		BlockLogWarning::new_b(self)
 	}
 }
 

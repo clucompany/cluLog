@@ -9,7 +9,6 @@ pub trait LogBase<'a> {
 
 	fn trace<'s>(&'a self, line: u32, pos: u32, file: &'static str, args: Arguments<'s>) -> io::Result<()>;
 
-
 	fn warning<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;
 	
 	fn info<'s>(&'a self, args: Arguments<'s>) -> io::Result<()>;

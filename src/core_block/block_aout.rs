@@ -22,20 +22,14 @@ impl<'a, A: LogExtend<'a>> BlockLogErrOut<'a, A> {
           )
      }
      #[inline(always)]
+     pub fn new_b(a: A) -> Box<Self> {
+          Box::new(Self::new(a))
+     }
+     #[inline(always)]
      pub fn to_box(self) -> Box<Self> {
           Box::new(self)
      }
 }
-
-/*
-impl<'a> LogEmptyConst for BlockLogErrOut<'a, LogTotalEmpty, LogTotalEmpty> {
-	#[inline(always)]
-	fn empty() -> Self {
-		BlockLogErrOut::new(LogTotalEmpty::new(), LogTotalEmpty::new())
-	}
-}*/
-
-
 
 impl<'a, A: LogExtend<'a> + Clone> Clone for BlockLogErrOut<'a, A> {
      #[inline(always)]

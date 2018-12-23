@@ -23,6 +23,10 @@ impl<'a, A: LogExtend<'a>> BlockLogErr<'a, A> {
           )
      }
      #[inline(always)]
+     pub fn new_b(a: A) -> Box<Self> {
+          Box::new(Self::new(a))
+     }
+     #[inline(always)]
      pub fn to_box(self) -> Box<Self> {
           Box::new(self)
      }
