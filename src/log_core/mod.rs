@@ -5,8 +5,7 @@ mod flush;
 mod lock;
 mod shape;
 
-
-use crate::core_union::LogUnionConst;
+use crate::log_union::LogUnionConst;
 pub use self::flush::*;
 pub use self::out::*;
 pub use self::lock::*;

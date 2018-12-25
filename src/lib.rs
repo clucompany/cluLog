@@ -1,28 +1,32 @@
 
+#[macro_use]
+extern crate clucolor;
 
-#[macro_use]
-mod core;
-#[macro_use]
-pub mod core_union;
+mod macros;
+mod macros_init;
 
 mod def_static_log;
-use self::def_static_log::LogDefStaticLog;
 
-pub mod core_block;
+pub mod log_core;
+pub mod log_union;
+pub mod log_shape;
 
-#[macro_use]
-mod macros;
-#[allow(unused_imports)]
-use self::macros::*;
+mod log_write;
 
-use std::sync::ONCE_INIT;
+
+mod log_file;
+pub use self::log_file::*;
+
+
+
+use crate::log_core::LogStatic;
 use std::sync::Once;
-pub use self::core::*;
+use std::sync::ONCE_INIT;
+pub use self::log_write::*;
 
 
 
-
-static mut LOGGER: &'static LogStatic<'static> = &LogDefStaticLog::new();
+static mut LOGGER: &'static LogStatic<'static> = &def_static_log::LogDefStaticLog::new();
 static LOGGER_INIT: Once = ONCE_INIT;
 
 

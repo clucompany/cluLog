@@ -1,11 +1,13 @@
 
 #[macro_use]
-extern crate cluLogCore;
+extern crate cluLog;
 
 
 use std::io::Write;
 
-fn main() {     	
+fn main() {	
+     inf!("Test");
+	
      {//Lock out thread
           let mut lock = lock_out!();
 

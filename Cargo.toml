@@ -1,10 +1,9 @@
 [package]
-name = "cluLogCore"
-version = "0.1.6"
+name = "cluLog"
+version = "0.1.2"
 authors = ["Денис Котляров <denis2005991@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+cluColor = "0.1.5"
 cluExtIO = "0.1.7"
-
-

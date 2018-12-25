@@ -2,11 +2,11 @@
 //!Combining several log systems into one.
 
 use cluExtIO::UnionWrite;
-use crate::core::LogStatic;
-use crate::core::LogLockIO;
-use crate::core::LogBase;
-use crate::core::LogFlush;
-use crate::core::LogExtend;
+use crate::log_core::LogStatic;
+use crate::log_core::LogLockIO;
+use crate::log_core::LogBase;
+use crate::log_core::LogFlush;
+use crate::log_core::LogExtend;
 
 use std::io::Write;
 use std::fmt::Arguments;

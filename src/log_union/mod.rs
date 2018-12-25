@@ -1,9 +1,10 @@
 
+
+use crate::log_core::LogExtend;
+
 #[macro_use]
 mod log;
 pub use self::log::*;
-
-use crate::core::LogExtend;
 
 
 

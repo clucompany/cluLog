@@ -1,9 +1,9 @@
 
-use crate::core::LogExtend;
-use crate::core::LogStatic;
-use crate::core::LogLockIO;
-use crate::core::LogFlush;
-use crate::core::LogBase;
+use crate::log_core::LogExtend;
+use crate::log_core::LogStatic;
+use crate::log_core::LogLockIO;
+use crate::log_core::LogBase;
+use crate::log_core::LogFlush;
 use std::io::Write;
 use std::fmt::Arguments;
 use std::io;
